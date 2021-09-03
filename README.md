@@ -23,7 +23,6 @@ This is a basic example which shows you how to find the best parameter.
 We use pmbc data as a demo:
 
 ``` r
-# install.packages("dubiousdetector")
 suppressPackageStartupMessages(library(dubiousdetector))
 data(pbmc.data)
 ```
