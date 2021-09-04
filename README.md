@@ -34,7 +34,7 @@ data(pbmc.data)
 chooseK(pbmc.data)
 ```
 
-<!-- <img src="man/figures/README-chooseK-1.png" width="100%" /> -->
+<img src="man/figures/chooseK_ex.png" width="100%" /> 
 
 ### Example for umap
 
