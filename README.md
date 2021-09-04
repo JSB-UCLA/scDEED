@@ -1,13 +1,12 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# scDED
-Single-cell dubious embedding detector (scDED): a statistical method for detecting dubious non-linear embeddings.
+# scDED (single-cell dubious embedding detector): a statistical method for detecting dubious non-linear embeddings
 This package is used for determining the reliability of non-linear dimension reduction embeddings.
 It provides functions to detect dubious cells and trustworthy
-cells under tSNE and UMAP. Furthermore, based on the number of dubious
-cells, functions in this package will provide the best perplexity
-parameter under tSNE and best n.neighbors parameter under UMAP.
+cells in tSNE and UMAP embeddings. Furthermore, by minimizing the number of dubious
+cells, functions in this package find the best perplexity
+parameter of tSNE and best n.neighbors parameter of UMAP.
 
 ## Installation
 
@@ -20,7 +19,7 @@ install.packages("dubiousdetector")
 
 ## Example
 
-This is a basic example which shows you how to find the best parameter.
+This is a basic example showing how to find the best parameter.
 We use pmbc data as a demo:
 
 ``` r
