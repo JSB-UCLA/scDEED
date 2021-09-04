@@ -9,12 +9,11 @@ cells, functions in this package find the best perplexity
 parameter of tSNE and best n.neighbors parameter of UMAP.
 
 ## Installation
-
-You can install the released version of dubiousdetector from
-[CRAN](https://CRAN.R-project.org) with:
+You can install the released version of seDED from GitHub with:
 
 ``` r
-install.packages("dubiousdetector")
+library(devtools)
+devtools::install_github("JSB-UCLA/seDED")
 ```
 
 ## Example
@@ -23,7 +22,7 @@ This is a basic example showing how to find the best parameter.
 We use pmbc data as a demo:
 
 ``` r
-suppressPackageStartupMessages(library(dubiousdetector))
+suppressPackageStartupMessages(library(seDED))
 data(pbmc.data)
 ```
 
