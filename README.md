@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# scDED (single-cell dubious embedding detector): a statistical method for detecting dubious non-linear embeddings
+# scDEED (single-cell dubious embedding detector): a statistical method for detecting dubious non-linear embeddings
 This package is used for determining the reliability of non-linear dimension reduction embeddings.
 It provides functions to detect dubious cells and trustworthy
 cells in tSNE and UMAP embeddings. Furthermore, by minimizing the number of dubious
@@ -9,11 +9,11 @@ cells, functions in this package find the best perplexity
 parameter of tSNE and best n.neighbors parameter of UMAP.
 
 ## Installation
-You can install the released version of seDED from GitHub with:
+You can install the released version of scDEED from GitHub with:
 
 ``` r
 library(devtools)
-devtools::install_github("JSB-UCLA/seDED")
+devtools::install_github("JSB-UCLA/scDEED")
 ```
 
 ## Example
@@ -22,7 +22,7 @@ This is a basic example showing how to find the best parameter.
 We use pmbc data as a demo:
 
 ``` r
-suppressPackageStartupMessages(library(seDED))
+suppressPackageStartupMessages(library(scDEED))
 data(pbmc.data)
 ```
 
@@ -31,6 +31,7 @@ data(pbmc.data)
 ``` r
 chooseK(pbmc.data)
 ```
+ChooseK plot:
 
 <img src="man/figures/chooseK_ex.png" width="100%" /> 
 
@@ -39,9 +40,19 @@ chooseK(pbmc.data)
 ``` r
 umap_example <- umap_tsne_process(pbmc.data , num_pc = 10, use_method = "umap",visualization = TRUE)
 ```
+Dubious plot:
+<img src="man/figures/tsne_dubious.png" width="100%" /> 
+
+Trustworthy plot:
+<img src="man/figures/tsne_trustworthy.png" width="100%" /> 
 
 ### Example for tsne
 
 ``` r
 tsne_example <- umap_tsne_process(pbmc.data, num_pc = 10, use_method = "tsne",visualization = TRUE)
 ```
+Dubious plot:
+<img src="man/figures/umap_dubious.png" width="100%" /> 
+
+Trustworthy plot:
+<img src="man/figures/umap_trustworthy.png" width="100%" /> 
