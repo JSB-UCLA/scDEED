@@ -105,10 +105,10 @@ ChoosePerplexity<- function(pbmc,pbmc.permuted, K, perplexity_score){
 # Choose the n.neighbors parameter in UMAP. Here for one parameter
 ChoosenNeighbors<- function(pbmc,pbmc.permuted, reduction.method, K, n){
   distances<-distances::distances
-  pbmc_nNeighbors = Seurat::RunUMAP(pbmc, reduction = reduction.method,dims = 1:K, seed.use = 100, n.neighbors=n, do.fast = T)
+  pbmc_nNeighbors = Seurat::RunUMAP(pbmc, reduction = reduction.method,dims = 1:K, seed.use = 100, n.neighbors=n)
   print("UMAP done")
   UMAP_distances = distances(pbmc_nNeighbors@reductions$umap@cell.embeddings)
-  pbmc.permuted <- Seurat::RunUMAP(pbmc.permuted, reduction = reduction.method, dims = 1:K, seed.use = 100, n.neighbors=n, do.fast = T)
+  pbmc.permuted <- Seurat::RunUMAP(pbmc.permuted, reduction = reduction.method, dims = 1:K, seed.use = 100, n.neighbors=n)
   print("permuted UMAP done")
   UMAP_distances_permuted = distances(pbmc.permuted@reductions$umap@cell.embeddings)
   results<-list("object"= pbmc_nNeighbors,"object.permuted"=pbmc.permuted,"UMAP_distances"=UMAP_distances,"UMAP_distances_permuted"=UMAP_distances_permuted)
