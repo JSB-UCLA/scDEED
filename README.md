@@ -45,13 +45,13 @@ umap_example <- umap_tsne_process(pbmc.data , num_pc = 10, use_method = "umap",v
 umap_example$`UMAP plot with dubious cells`
 ```
 
-Dubious plot:
+Dubious plot associated with the best parameter:
 <img src="man/figures/tsne_dubious.png" width="100%" /> 
 
 ``` r
 umap_example$`UMAP plot with trustworthy cells`
 ```
-Trustworthy plot:
+Trustworthy plot associated with the best parameter:
 <img src="man/figures/tsne_trustworthy.png" width="100%" /> 
 
 ### Example for tsne
@@ -64,11 +64,11 @@ tsne_example <- umap_tsne_process(pbmc.data, num_pc = 10, use_method = "tsne",vi
 tsne_example$`tSNE plot with dubious cells`
 ```
 
-Dubious plot:
+Dubious plot associated with the best parameter:
 <img src="man/figures/umap_dubious.png" width="100%" /> 
 
 ``` r
 tsne_example$`tSNE plot with trustworthy cells`
 ```
-Trustworthy plot:
+Trustworthy plot associated with the best parameter:
 <img src="man/figures/umap_trustworthy.png" width="100%" /> 
