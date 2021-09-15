@@ -218,7 +218,7 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
 
     }
     best_para <- n_neighbors[which(dubious_number_UMAP == min(dubious_number_UMAP))]
-
+    dub_neighbor <- data.frame("n.neighbors" = n_neighbors, "number of dubious cells" = dubious_number_UMAP)
     if(visualization == TRUE){
       res <- ChoosenNeighbors(pbmc, pbmc.permuted, "pca", num_pc, best_para)
       similarity_score_UMAP <-Cell.Similarity.UMAP(results.PCA$PCA_distances,results.PCA$PCA_distances_permuted,res$UMAP_distances,res$UMAP_distances_permuted, similarity_percent)
@@ -227,12 +227,14 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
       bad_graph <- Seurat::DimPlot(res$object, reduction = "umap", cells.highlight = list(Dubious = ClassifiedCells_UMAP$UMAP_badindex)) + ggplot2::scale_color_manual(labels = c("Other cells", "Dubious cells"), values = c("grey", "red"))
 
       trust_graph <- Seurat::DimPlot(res$object, reduction = "umap", cells.highlight = list(Trustworthy = ClassifiedCells_UMAP$UMAP_goodindex)) + ggplot2::scale_color_manual(labels = c("Other cells", "Trustworthy cells"), values = c("grey", "blue"))
-      output <-list(dubious_number_UMAP, best_para, bad_graph, trust_graph)
+      
+      output <-list(dub_neighbor, best_para, bad_graph, trust_graph)
+      
       names(output) <- c("dubious numbers corresponding to n.neighbors list", "best n.neighbors", "UMAP plot with dubious cells", "UMAP plot with trustworthy cells")
       return(output)
        }
     else{
-      output <-list(dubious_number_UMAP, best_para)
+      output <-list(dub_neighbor, best_para)
       names(output) <- c("dubious numbers corresponding to n.neighbors list", "best n.neighbors")
       return(output)
     }
@@ -254,6 +256,7 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
       dubious_number_tSNE[i] = length(ClassifiedCells_tSNE$tSNE_badindex)
     }
     best_para <- perplexity[which(dubious_number_tSNE == min(dubious_number_tSNE))]
+    dub_perplex <- data.frame("perplexity" = perplexity, "number of dubious cells" = dubious_number_tSNE)
     if(visualization == TRUE){
       res <- ChoosePerplexity(pbmc,pbmc.permuted, num_pc, best_para)
       similarity_score_tSNE <-Cell.Similarity.tSNE(results.PCA$PCA_distances,results.PCA$PCA_distances_permuted,res$tSNE_distances,res$tSNE_distances_permuted,similarity_percent)
@@ -261,12 +264,12 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
       ClassifiedCells_tSNE<-Cell.Classify.tSNE(similarity_score_tSNE$rho_tSNE,similarity_score_tSNE$rho_tSNE_permuted)
       bad_graph <- Seurat::DimPlot(res$object, reduction = "tsne", cells.highlight = list(dubious = ClassifiedCells_tSNE$tSNE_badindex)) + ggplot2::scale_color_manual(labels = c("Other cells", "Dubious cells"), values = c("grey", "red"))
       trust_graph <- Seurat::DimPlot(res$object, reduction = "tsne", cells.highlight = list(trustworthy = ClassifiedCells_tSNE$tSNE_goodindex)) + ggplot2::scale_color_manual(labels = c("Other cells", "Trustworthy cells"), values = c("grey", "blue"))
-      output <-list(dubious_number_tSNE, best_para, bad_graph, trust_graph)
+      output <-list(dub_perplex, best_para, bad_graph, trust_graph)
       names(output) <- c("dubious numbers corresponding to perplexities", "best perplexity", "tSNE plot with dubious cells", "tSNE plot with trustworthy cells")
       return(output)
     }
       else{
-        output <-list(dubious_number_tSNE, best_para)
+        output <-list(dub_perplex, best_para)
         names(output) <- c("dubious numbers corresponding to perplexities", "best perplexity")
         return(output)
       }
