@@ -1,11 +1,11 @@
-Package: seDEED
+Package: scDEED
 Type: Package
 Title: Single-cell Dubious Embedding Detector
 Version: 0.1.0
 Author@R: c(
   person("Lucy", "Xia", email = "Lucyxia@ust.hk", role = c("aut", "cre")),
   person("Tianyang", "Liu", email = "elijah1998@ucla.edu", role = c("aut")))
-Description: seDEED is a statistical method for detecting dubious non-linear embeddings
+Description: scDEED is a statistical method for detecting dubious non-linear embeddings
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
