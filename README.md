@@ -40,9 +40,17 @@ ChooseK plot:
 ``` r
 umap_example <- umap_tsne_process(pbmc.data , num_pc = 10, use_method = "umap",visualization = TRUE)
 ```
+
+``` r
+umap_example$`UMAP plot with dubious cells`
+```
+
 Dubious plot:
 <img src="man/figures/tsne_dubious.png" width="100%" /> 
 
+``` r
+umap_example$`UMAP plot with trustworthy cells`
+```
 Trustworthy plot:
 <img src="man/figures/tsne_trustworthy.png" width="100%" /> 
 
@@ -51,8 +59,16 @@ Trustworthy plot:
 ``` r
 tsne_example <- umap_tsne_process(pbmc.data, num_pc = 10, use_method = "tsne",visualization = TRUE)
 ```
+
+``` r
+tsne_example$`tSNE plot with dubious cells`
+```
+
 Dubious plot:
 <img src="man/figures/umap_dubious.png" width="100%" /> 
 
+``` r
+tsne_example$`tSNE plot with trustworthy cells`
+```
 Trustworthy plot:
 <img src="man/figures/umap_trustworthy.png" width="100%" /> 
