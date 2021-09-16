@@ -219,23 +219,31 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
     }
     best_para <- n_neighbors[which(dubious_number_UMAP == min(dubious_number_UMAP))]
     dub_neighbor <- data.frame("n.neighbors" = n_neighbors, "number of dubious cells" = dubious_number_UMAP)
+    res <- ChoosenNeighbors(pbmc, pbmc.permuted, "pca", num_pc, best_para)
+    similarity_score_UMAP <-Cell.Similarity.UMAP(results.PCA$PCA_distances,results.PCA$PCA_distances_permuted,res$UMAP_distances,res$UMAP_distances_permuted, similarity_percent)
+    
+    ClassifiedCells_UMAP<-Cell.Classify.UMAP(similarity_score_UMAP$rho_UMAP,similarity_score_UMAP$rho_UMAP_permuted)
+    cell_list <- rownames(res$object@meta.data)
     if(visualization == TRUE){
-      res <- ChoosenNeighbors(pbmc, pbmc.permuted, "pca", num_pc, best_para)
-      similarity_score_UMAP <-Cell.Similarity.UMAP(results.PCA$PCA_distances,results.PCA$PCA_distances_permuted,res$UMAP_distances,res$UMAP_distances_permuted, similarity_percent)
-
-      ClassifiedCells_UMAP<-Cell.Classify.UMAP(similarity_score_UMAP$rho_UMAP,similarity_score_UMAP$rho_UMAP_permuted)
+      
       bad_graph <- Seurat::DimPlot(res$object, reduction = "umap", cells.highlight = list(Dubious = ClassifiedCells_UMAP$UMAP_badindex)) + ggplot2::scale_color_manual(labels = c("Other cells", "Dubious cells"), values = c("grey", "red"))
 
       trust_graph <- Seurat::DimPlot(res$object, reduction = "umap", cells.highlight = list(Trustworthy = ClassifiedCells_UMAP$UMAP_goodindex)) + ggplot2::scale_color_manual(labels = c("Other cells", "Trustworthy cells"), values = c("grey", "blue"))
       
-      output <-list(dub_neighbor, best_para, bad_graph, trust_graph)
+      output <-list(dub_neighbor, best_para, cell_list[ClassifiedCells_UMAP$UMAP_badindex], cell_list[ClassifiedCells_UMAP$UMAP_goodindex], bad_graph, trust_graph)
       
-      names(output) <- c("dubious numbers corresponding to n.neighbors list", "best n.neighbors", "UMAP plot with dubious cells", "UMAP plot with trustworthy cells")
+      names(output) <- c("dubious numbers corresponding to n.neighbors list", "best n.neighbors", 
+                         "list of dubious cells corresponding to best n.neighbors",
+                         "list of trustworthy cells corresponding to best n.neighbors",
+                         "UMAP plot with dubious cells - best n.neighbors", 
+                         "UMAP plot with trustworthy cells - best n.neighbors")
       return(output)
        }
     else{
-      output <-list(dub_neighbor, best_para)
-      names(output) <- c("dubious numbers corresponding to n.neighbors list", "best n.neighbors")
+      output <-list(dub_neighbor, best_para, cell_list[ClassifiedCells_UMAP$UMAP_badindex], cell_list[ClassifiedCells_UMAP$UMAP_goodindex])
+      names(output) <- c("dubious numbers corresponding to n.neighbors list", "best n.neighbors", 
+                         "list of dubious cells corresponding to best n.neighbors",
+                         "list of trustworthy cells corresponding to best n.neighbors")
       return(output)
     }
 
@@ -257,20 +265,28 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
     }
     best_para <- perplexity[which(dubious_number_tSNE == min(dubious_number_tSNE))]
     dub_perplex <- data.frame("perplexity" = perplexity, "number of dubious cells" = dubious_number_tSNE)
+    res <- ChoosePerplexity(pbmc,pbmc.permuted, num_pc, best_para)
+    similarity_score_tSNE <-Cell.Similarity.tSNE(results.PCA$PCA_distances,results.PCA$PCA_distances_permuted,res$tSNE_distances,res$tSNE_distances_permuted,similarity_percent)
+    
+    ClassifiedCells_tSNE<-Cell.Classify.tSNE(similarity_score_tSNE$rho_tSNE,similarity_score_tSNE$rho_tSNE_permuted)
+    cell_list <- rownames(res$object@meta.data)
     if(visualization == TRUE){
-      res <- ChoosePerplexity(pbmc,pbmc.permuted, num_pc, best_para)
-      similarity_score_tSNE <-Cell.Similarity.tSNE(results.PCA$PCA_distances,results.PCA$PCA_distances_permuted,res$tSNE_distances,res$tSNE_distances_permuted,similarity_percent)
-
-      ClassifiedCells_tSNE<-Cell.Classify.tSNE(similarity_score_tSNE$rho_tSNE,similarity_score_tSNE$rho_tSNE_permuted)
+      
       bad_graph <- Seurat::DimPlot(res$object, reduction = "tsne", cells.highlight = list(dubious = ClassifiedCells_tSNE$tSNE_badindex)) + ggplot2::scale_color_manual(labels = c("Other cells", "Dubious cells"), values = c("grey", "red"))
       trust_graph <- Seurat::DimPlot(res$object, reduction = "tsne", cells.highlight = list(trustworthy = ClassifiedCells_tSNE$tSNE_goodindex)) + ggplot2::scale_color_manual(labels = c("Other cells", "Trustworthy cells"), values = c("grey", "blue"))
-      output <-list(dub_perplex, best_para, bad_graph, trust_graph)
-      names(output) <- c("dubious numbers corresponding to perplexities", "best perplexity", "tSNE plot with dubious cells", "tSNE plot with trustworthy cells")
+      output <-list(dub_perplex, best_para, cell_list[ClassifiedCells_tSNE$tSNE_badindex], cell_list[ClassifiedCells_tSNE$tSNE_goodindex],bad_graph, trust_graph)
+      names(output) <- c("dubious numbers corresponding to perplexities", "best perplexity", 
+                         "list of dubious cell corresponding to best perplexity",
+                         "list of trustworthy cell corresponding to best perplexity",
+                         "tSNE plot with dubious cells - best perplexity", 
+                         "tSNE plot with trustworthy cells - best perplexity")
       return(output)
     }
       else{
-        output <-list(dub_perplex, best_para)
-        names(output) <- c("dubious numbers corresponding to perplexities", "best perplexity")
+        output <-list(dub_perplex, best_para, cell_list[ClassifiedCells_tSNE$tSNE_badindex], cell_list[ClassifiedCells_tSNE$tSNE_goodindex])
+        names(output) <- c("dubious numbers corresponding to perplexities", "best perplexity",
+                           "list of dubious cell corresponding to best perplexity",
+                           "list of trustworthy cell corresponding to best perplexity")
         return(output)
       }
 
