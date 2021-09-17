@@ -226,10 +226,10 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
     cell_list <- rownames(res$object@meta.data)
     if(visualization == TRUE){
       
-      bad_graph <- Seurat::DimPlot(res$object, reduction = "umap", cells.highlight = list(Dubious = ClassifiedCells_UMAP$UMAP_badindex)) + ggplot2::scale_color_manual(labels = c("Other cells", "Dubious cells"), values = c("grey", "red"))
-
-      trust_graph <- Seurat::DimPlot(res$object, reduction = "umap", cells.highlight = list(Trustworthy = ClassifiedCells_UMAP$UMAP_goodindex)) + ggplot2::scale_color_manual(labels = c("Other cells", "Trustworthy cells"), values = c("grey", "blue"))
-      
+      bad_graph <- Seurat::DimPlot(res$object, reduction = "umap", cells.highlight = list(`Dubious cells`= ClassifiedCells_UMAP$UMAP_badindex), cols.highlight = "red") 
+      levels(bad_graph$data$highlight)[match("Unselected",levels(bad_graph$data$highlight))] <- "Other Cells"
+      trust_graph <- Seurat::DimPlot(res$object, reduction = "umap", cells.highlight = list(`Trustworthy cells`= ClassifiedCells_UMAP$UMAP_goodindex), cols.highlight = "blue") 
+      levels(trust_graph$data$highlight)[match("Unselected",levels(trust_graph$data$highlight))] <- "Other Cells"
       output <-list(dub_neighbor, best_para, cell_list[ClassifiedCells_UMAP$UMAP_badindex], cell_list[ClassifiedCells_UMAP$UMAP_goodindex], bad_graph, trust_graph)
       
       names(output) <- c("dubious numbers corresponding to n.neighbors list", "best n.neighbors", 
@@ -272,8 +272,11 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
     cell_list <- rownames(res$object@meta.data)
     if(visualization == TRUE){
       
-      bad_graph <- Seurat::DimPlot(res$object, reduction = "tsne", cells.highlight = list(dubious = ClassifiedCells_tSNE$tSNE_badindex)) + ggplot2::scale_color_manual(labels = c("Other cells", "Dubious cells"), values = c("grey", "red"))
-      trust_graph <- Seurat::DimPlot(res$object, reduction = "tsne", cells.highlight = list(trustworthy = ClassifiedCells_tSNE$tSNE_goodindex)) + ggplot2::scale_color_manual(labels = c("Other cells", "Trustworthy cells"), values = c("grey", "blue"))
+      bad_graph <- Seurat::DimPlot(res$object, reduction = "tsne", cells.highlight = list(`Dubious cells`= ClassifiedCells_tSNE$tSNE_badindex), cols.highlight = "red") 
+      levels(bad_graph$data$highlight)[match("Unselected",levels(bad_graph$data$highlight))] <- "Other Cells"
+      trust_graph <- Seurat::DimPlot(res$object, reduction = "tsne", cells.highlight = list(`Trustworthy cells`= ClassifiedCells_tSNE$tSNE_goodindex), cols.highlight = "blue") 
+      levels(trust_graph$data$highlight)[match("Unselected",levels(trust_graph$data$highlight))] <- "Other Cells"
+      
       output <-list(dub_perplex, best_para, cell_list[ClassifiedCells_tSNE$tSNE_badindex], cell_list[ClassifiedCells_tSNE$tSNE_goodindex],bad_graph, trust_graph)
       names(output) <- c("dubious numbers corresponding to perplexities", "best perplexity", 
                          "list of dubious cell corresponding to best perplexity",
