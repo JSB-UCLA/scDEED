@@ -78,6 +78,25 @@ tsne_example <- umap_tsne_process(pbmc.data, num_pc = 10, use_method = "tsne",vi
 ```
 
 ``` r
+head(tsne_example$`dubious numbers corresponding to perplexities`)
+```
+
+|   |  perplexity |  number.of.dubious.cells |
+| - | ----------- | ------------------------ |
+| 1 | 	20         | 	30                      |
+| 2 | 	50         | 	50                      |
+| 3 | 	80         | 	20                      |
+| 4 | 	110        | 	14                      |
+| 5 | 	140        | 	23                      |
+| 6 | 	170        | 	23                      |
+
+
+``` r
+tsne_example$`best perplexity`
+```
+110
+
+``` r
 tsne_example$`tSNE plot with dubious cells`
 ```
 
