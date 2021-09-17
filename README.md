@@ -42,6 +42,18 @@ umap_example <- umap_tsne_process(pbmc.data , num_pc = 10, use_method = "umap",v
 ```
 
 ``` r
+head(umap_example$`dubious numbers corresponding to n.neighbors list`)
+```
+|   |  n.neighbors |  number.of.dubious.cells |
+| - | ------------ | ------------------------ |
+| 1 | 	5           | 	42		                    |
+| 2 | 	6           | 	25		                    |
+| 3 | 	7           | 	57		                    |
+| 4 | 	8           | 	20		                    |
+| 5 | 	9           | 	6		                     |
+| 6 | 	10          | 	32		                    |
+
+``` r
 umap_example$`UMAP plot with dubious cells`
 ```
 
