@@ -54,6 +54,11 @@ head(umap_example$`dubious numbers corresponding to n.neighbors list`)
 | 6 | 	10          | 	32		                    |
 
 ``` r
+umap_example$`best n.neighbors`
+```
+9
+
+``` r
 umap_example$`UMAP plot with dubious cells`
 ```
 
