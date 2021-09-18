@@ -16,26 +16,6 @@ pbmc.permuted@assays$RNA@scale.data = X_permuted
 }
 
 
-Distances.PCA = function(pbmc,pbmc.permuted, K)
-{
-
-pbmc <-Seurat::RunPCA(pbmc, npcs= K, features = Seurat::VariableFeatures(object = pbmc))
-pbmc.permuted<-Seurat::RunPCA(pbmc.permuted, npcs= K,features = Seurat::VariableFeatures(object = pbmc.permuted))
-
-
-M=pbmc@reductions[["pca"]]@cell.embeddings
-PCA_distances = as.matrix(dist(M[,1:K]))
-
-M_permuted=pbmc.permuted@reductions[["pca"]]@cell.embeddings
-PCA_distances_permuted = as.matrix(dist(M_permuted[,1:K]))
-
-results.PCA<-list("object"=pbmc,"object.permuted"=pbmc.permuted,"PCA_distances"=PCA_distances,"PCA_distances_permuted"=PCA_distances_permuted)
-
-return(results.PCA)
-}
-
-
-
 # Find distances under PCA and tSNE for both original and permuted matrices.
 Distances.PCA.big = function(pbmc,pbmc.permuted, K, perplexity_score)
 {
