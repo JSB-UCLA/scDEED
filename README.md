@@ -63,13 +63,13 @@ umap_example$`UMAP plot with dubious cells`
 ```
 
 UMAP Plot corresponding to the best n.neighbers, highlighting the dubious cells:
-<img src="man/figures/tsne_dubious.png" width="100%" /> 
+<img src="man/figures/umap_dubious.png" width="100%" /> 
 
 ``` r
 umap_example$`UMAP plot with trustworthy cells`
 ```
 UMAP Plot corresponding to the best n.neighbers, highlighting the trustworthy cells:
-<img src="man/figures/tsne_trustworthy.png" width="100%" /> 
+<img src="man/figures/umap_trustworthy.png" width="100%" /> 
 
 ### Example for tsne
 
@@ -101,10 +101,10 @@ tsne_example$`tSNE plot with dubious cells`
 ```
 
 tSNE Plot corresponding to the best n.neightbers, highlighting the dubious cells:
-<img src="man/figures/umap_dubious.png" width="100%" /> 
+<img src="man/figures/tsne_dubious.png" width="100%" /> 
 
 ``` r
 tsne_example$`tSNE plot with trustworthy cells`
 ```
 tSNE Plot corresponding to the best n.neightbers, highlighting the trustworthy cells:
-<img src="man/figures/umap_trustworthy.png" width="100%" /> 
+<img src="man/figures/tsne_trustworthy.png" width="100%" /> 
