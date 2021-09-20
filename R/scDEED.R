@@ -277,5 +277,7 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
 
 }
 
+t
+
 
 
