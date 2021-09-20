@@ -1,7 +1,7 @@
 \name{chooseK}
 \alias{chooseK}
 \title{
-Number of PC choosing technique
+Choose the number of PC based on an elbow plot
 }
 \usage{
 chooseK(pbmc)
