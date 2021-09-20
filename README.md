@@ -42,7 +42,7 @@ umap_example <- umap_tsne_process(pbmc.data , num_pc = 10, use_method = "umap",v
 ```
 
 ``` r
-head(umap_example$`dubious numbers corresponding to n.neighbors list`)
+head(umap_example$`number of dubious cells corresponding to n.neighbors list`)
 ```
 |   |  n.neighbors |  number.of.dubious.cells |
 | - | ------------ | ------------------------ |
@@ -78,7 +78,7 @@ tsne_example <- umap_tsne_process(pbmc.data, num_pc = 10, use_method = "tsne",vi
 ```
 
 ``` r
-head(tsne_example$`dubious numbers corresponding to perplexities`)
+head(tsne_example$`number of dubious cells corresponding to perplexity list`)
 ```
 
 |   |  perplexity |  number.of.dubious.cells |
