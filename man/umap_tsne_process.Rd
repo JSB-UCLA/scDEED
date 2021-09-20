@@ -49,7 +49,7 @@ If the input visulization is set to be TRUE, i) a dataframe containing n.neighbo
 
 \description{
 If the user chooses method umap, this function provides the number of dubious cells for all provided n.neighber choices, and also the n.neighber parameter corresponding to the lowest number of dubious cells.
-If the user chooses method tsne, this function provides the number of dubious cells for all provided perplexity choices, and also the perplexity parameter corresponding to the lowest number of dubious cells. t
+If the user chooses method tsne, this function provides the number of dubious cells for all provided perplexity choices, and also the perplexity parameter corresponding to the lowest number of dubious cells. 
 }
 
 
