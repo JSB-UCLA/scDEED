@@ -2,7 +2,7 @@
 \alias{umap_tsne_process}
 
 \title{
-Dubious cells detector under tSNE and UAMP
+Dubious cells detector under tSNE and UMAP
 }
 
 \usage{
@@ -34,7 +34,7 @@ a boolean value specifies whether we will display the plots with dubious/trustwo
 'tsne' or 'umap'
 }
   \item{perplexity}{
-a list of choices for perplexity parameters in tSNE
+a list of choices for perplexity parameter in tSNE
 }
   \item{perplexity_score}{
 a value for perplexity parameter as intialization in tSNE, default 30
@@ -42,14 +42,14 @@ a value for perplexity parameter as intialization in tSNE, default 30
 }
 
 \value{
-A list contains i) a vector of dubious numbers corresponding to the list of n.neighbors parameters in UMAP or the list of perplexity parameters in tSNE ii) an n.neighber  or a perplexity corresponding to the lowest dubious number.
+A list contains i) a dataframe containing n.neighbors parameters and their corresponding number of dubious cells in UMAP or the dataframe containing perplexity parameters and their corresponding number of dubious cells in tSNE ii) an n.neighber  or a perplexity corresponding to the lowest dubious number. iii) a list of dubious cells corresponding to best n.neighbors or a list of dubious cells corresponding to best perplexity iv) a list of trustworthy cells corresponding to best n.neighbors or a list of trustworthy cells corresponding to best perplexity
 
-If the input visulization is set to be TRUE, i) a vector containing indices for the dubious cells will be returned ii) a plot displaying all dubious cells, and a plot displaying all trustworthy cells will be returned, both corresponding to the parameter resulting in the lowest number of dubious cells.
+If the input visulization is set to be TRUE, i) a dataframe containing n.neighbors parameters and their corresponding number of dubious cells in UMAP or the dataframe containing perplexity parameters and their corresponding number of dubious cells in tSNE ii) an n.neighber  or a perplexity corresponding to the lowest dubious number. iii) a list of dubious cells corresponding to best n.neighbors or a list of dubious cells corresponding to best perplexity iv) a list of trustworthy cells corresponding to best n.neighbors or a list of trustworthy cells corresponding to best perplexity v) a plot displaying all dubious cells corresponding to the parameter resulting in the lowest number of dubious cells. vi) a plot displaying all trustworthy cells corresponding to the parameter resulting in the lowest number of dubious cells.
 }
 
 \description{
-If the user chooses method umap, this function provides the dubious numbers for all provided n.neighber choices and the n.neighber parameter corresponding to the lowest number of dubious cells.
-If the user chooses method tsne, this function provides the dubious numbers for all provided perplexity choices and the perplexity parameter corresponding to the lowest number of dubious cells.
+If the user chooses method umap, this function provides the number of dubious cells for all provided n.neighber choices, and also the n.neighber parameter corresponding to the lowest number of dubious cells.
+If the user chooses method tsne, this function provides the number of dubious cells for all provided perplexity choices, and also the perplexity parameter corresponding to the lowest number of dubious cells.
 }
 
 
