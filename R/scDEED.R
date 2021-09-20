@@ -212,7 +212,7 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
       levels(trust_graph$data$highlight)[match("Unselected",levels(trust_graph$data$highlight))] <- "Other Cells"
       output <-list(dub_neighbor, best_para, cell_list[ClassifiedCells_UMAP$UMAP_badindex], cell_list[ClassifiedCells_UMAP$UMAP_goodindex], bad_graph, trust_graph)
       
-      names(output) <- c("dubious numbers corresponding to n.neighbors list", "best n.neighbors", 
+      names(output) <- c("number of dubious cells corresponding to n.neighbors list", "best n.neighbors", 
                          "list of dubious cells corresponding to best n.neighbors",
                          "list of trustworthy cells corresponding to best n.neighbors",
                          "UMAP plot with dubious cells - best n.neighbors", 
@@ -221,7 +221,7 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
        }
     else{
       output <-list(dub_neighbor, best_para, cell_list[ClassifiedCells_UMAP$UMAP_badindex], cell_list[ClassifiedCells_UMAP$UMAP_goodindex])
-      names(output) <- c("dubious numbers corresponding to n.neighbors list", "best n.neighbors", 
+      names(output) <- c("number of dubious cells corresponding to n.neighbors list", "best n.neighbors", 
                          "list of dubious cells corresponding to best n.neighbors",
                          "list of trustworthy cells corresponding to best n.neighbors")
       return(output)
@@ -258,7 +258,7 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
       levels(trust_graph$data$highlight)[match("Unselected",levels(trust_graph$data$highlight))] <- "Other Cells"
       
       output <-list(dub_perplex, best_para, cell_list[ClassifiedCells_tSNE$tSNE_badindex], cell_list[ClassifiedCells_tSNE$tSNE_goodindex],bad_graph, trust_graph)
-      names(output) <- c("dubious numbers corresponding to perplexities", "best perplexity", 
+      names(output) <- c("number of dubious cells corresponding to perplexity list", "best perplexity", 
                          "list of dubious cell corresponding to best perplexity",
                          "list of trustworthy cell corresponding to best perplexity",
                          "tSNE plot with dubious cells - best perplexity", 
@@ -267,7 +267,7 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
     }
       else{
         output <-list(dub_perplex, best_para, cell_list[ClassifiedCells_tSNE$tSNE_badindex], cell_list[ClassifiedCells_tSNE$tSNE_goodindex])
-        names(output) <- c("dubious numbers corresponding to perplexities", "best perplexity",
+        names(output) <- c("number of dubious cells corresponding to perplexity list", "best perplexity",
                            "list of dubious cell corresponding to best perplexity",
                            "list of trustworthy cell corresponding to best perplexity")
         return(output)
