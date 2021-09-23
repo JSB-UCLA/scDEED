@@ -171,10 +171,10 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
   suppressWarnings({pbmc = Seurat::CreateSeuratObject(counts = pbmc)})
   }
   
-  pbmc[["percent.mt"]] <- PercentageFeatureSet(pbmc, pattern = "^MT-")
+  pbmc[["percent.mt"]] <- Seurat::PercentageFeatureSet(pbmc, pattern = "^MT-")
   pbmc <- subset(pbmc, subset = nFeature_RNA > 200 & nFeature_RNA < 2500 & percent.mt < 5)
-  pbmc <- NormalizeData(pbmc, normalization.method = "LogNormalize", scale.factor = 10000)
-  pbmc <- NormalizeData(pbmc)
+  pbmc <- Seurat::NormalizeData(pbmc, normalization.method = "LogNormalize", scale.factor = 10000)
+  pbmc <- Seurat::NormalizeData(pbmc)
   
   pbmc <- Seurat::FindVariableFeatures(pbmc)
 
