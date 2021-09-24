@@ -205,7 +205,7 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
     }
     best_para <- n_neighbors[which(dubious_number_UMAP == min(dubious_number_UMAP))]
     if(length(best_para) != 0){
-      best_para <- best_para[1]
+      best_para <- min(best_para)
     }
     dub_neighbor <- data.frame("n.neighbors" = n_neighbors, "number of dubious cells" = dubious_number_UMAP)
     res <- ChoosenNeighbors(pbmc, pbmc.permuted, "pca", num_pc, best_para)
