@@ -168,6 +168,28 @@ chooseK = function(pbmc){
 umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1),35,40,45,50),  similarity_percent = 0.5, visualization = FALSE, use_method = "umap",
                              perplexity = c(seq(from=20,to=410,by=30),seq(from=450,to=800,by=50)),perplexity_score = 30){
   if(class(pbmc) != "Seurat"){
+    dupli <- duplicated(colnames(pbmc))
+    if(length(which(dupli == TRUE)) != 0){
+      pbmc <- pbmc[, !dupli]
+    }
+    
+    # zero_row <- apply(pbmc, 1, function(row) all(row == 0)) 
+    # zero_col <- apply(pbmc, 2, function(col) all(col == 0))
+    # negative <- apply(pbmc, 2, function(col) any(col < 0))
+    # 
+    # if(length(which(negative == TRUE)) != 0){
+    #   warning("There are negative values in the count matrix, and we have removed the corresponding cells and processd.")
+    #   pbmc <- pbmc[, -negative]
+    # }
+    # if(length(which(zero_row == TRUE)) != 0){
+    #   warning("There are rows containing all zeros, and we have removed them correspondingly and proceed.")
+    #   pbmc <- pbmc[-zero_row, ]
+    # }
+    # if(length(which(zero_col == TRUE)) != 0){
+    #   warning("There are columns containing all zeros, and we have removed them correspondingly and proceed.")
+    #   pbmc <- pbmc[, -zero_col]
+    # }
+    
   suppressWarnings({pbmc = Seurat::CreateSeuratObject(counts = pbmc)})
   }
   
@@ -253,6 +275,9 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
       dubious_number_tSNE[i] = length(ClassifiedCells_tSNE$tSNE_badindex)
     }
     best_para <- perplexity[which(dubious_number_tSNE == min(dubious_number_tSNE))]
+    if(length(best_para) != 0){
+      best_para <- min(best_para)
+    }
     dub_perplex <- data.frame("perplexity" = perplexity, "number of dubious cells" = dubious_number_tSNE)
     res <- ChoosePerplexity(pbmc,pbmc.permuted, num_pc, best_para)
     similarity_score_tSNE <-Cell.Similarity.tSNE(results.PCA$PCA_distances,results.PCA$PCA_distances_permuted,res$tSNE_distances,res$tSNE_distances_permuted,similarity_percent)
