@@ -157,6 +157,29 @@ Cell.Classify.UMAP = function(rho_UMAP,rho_UMAP_permuted){
 
 chooseK = function(pbmc){
   if(class(pbmc) != "Seurat"){
+    dupli <- duplicated(colnames(pbmc))
+    if(length(which(dupli == TRUE)) != 0){
+      pbmc <- pbmc[, !dupli]
+    }
+    negative <- which(as.matrix(pbmc < 0), arr.ind = T)[, 2]
+    if(length(negative) != 0){
+      warning("There are negative values in the count matrix, and we have removed the corresponding cells and processd.")
+      pbmc <- pbmc[, -negative]
+    }
+    
+    zero_row <- which(Matrix::rowSums(pbmc) == 0)
+    zero_col <- which(Matrix::colSums(pbmc) == 0)
+    
+    
+    
+    if(length(which(zero_row == TRUE)) != 0){
+      warning("There are rows containing all zeros, and we have removed them correspondingly and proceed.")
+      pbmc <- pbmc[-zero_row, ]
+    }
+    if(length(which(zero_col == TRUE)) != 0){
+      warning("There are columns containing all zeros, and we have removed them correspondingly and proceed.")
+      pbmc <- pbmc[, -zero_col]
+    }
     pbmc = suppressWarnings({Seurat::CreateSeuratObject(counts = pbmc)})
   }
   pbmc <- Seurat::FindVariableFeatures(pbmc)
@@ -172,23 +195,25 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
     if(length(which(dupli == TRUE)) != 0){
       pbmc <- pbmc[, !dupli]
     }
+    negative <- which(as.matrix(pbmc < 0), arr.ind = T)[, 2]
+    if(length(negative) != 0){
+      warning("There are negative values in the count matrix, and we have removed the corresponding cells and processd.")
+      pbmc <- pbmc[, -negative]
+    }
     
-    # zero_row <- apply(pbmc, 1, function(row) all(row == 0)) 
-    # zero_col <- apply(pbmc, 2, function(col) all(col == 0))
-    # negative <- apply(pbmc, 2, function(col) any(col < 0))
-    # 
-    # if(length(which(negative == TRUE)) != 0){
-    #   warning("There are negative values in the count matrix, and we have removed the corresponding cells and processd.")
-    #   pbmc <- pbmc[, -negative]
-    # }
-    # if(length(which(zero_row == TRUE)) != 0){
-    #   warning("There are rows containing all zeros, and we have removed them correspondingly and proceed.")
-    #   pbmc <- pbmc[-zero_row, ]
-    # }
-    # if(length(which(zero_col == TRUE)) != 0){
-    #   warning("There are columns containing all zeros, and we have removed them correspondingly and proceed.")
-    #   pbmc <- pbmc[, -zero_col]
-    # }
+    zero_row <- which(Matrix::rowSums(pbmc) == 0)
+    zero_col <- which(Matrix::colSums(pbmc) == 0)
+    
+     
+    
+    if(length(which(zero_row == TRUE)) != 0){
+      warning("There are rows containing all zeros, and we have removed them correspondingly and proceed.")
+      pbmc <- pbmc[-zero_row, ]
+    }
+    if(length(which(zero_col == TRUE)) != 0){
+      warning("There are columns containing all zeros, and we have removed them correspondingly and proceed.")
+      pbmc <- pbmc[, -zero_col]
+    }
     
   suppressWarnings({pbmc = Seurat::CreateSeuratObject(counts = pbmc)})
   }
