@@ -44,7 +44,7 @@ a value for perplexity parameter as intialization in tSNE, default 30
 \value{
 A list contains i) a dataframe containing n.neighbors parameters and their corresponding number of dubious cells in UMAP or the dataframe containing perplexity parameters and their corresponding number of dubious cells in tSNE ii) an n.neighber  or a perplexity corresponding to the lowest dubious number. iii) a list of dubious cells corresponding to best n.neighbors or a list of dubious cells corresponding to best perplexity iv) a list of trustworthy cells corresponding to best n.neighbors or a list of trustworthy cells corresponding to best perplexity
 
-If the input visulization is set to be TRUE, two more plots will be added, i) a plot displaying all dubious cells corresponding to the parameter resulting in the lowest number of dubious cells; ii) a plot displaying all trustworthy cells corresponding to the parameter resulting in the lowest number of dubious cells.
+If the input visulization is set to be TRUE, two more plots will be added, i) a plot displaying all dubious cells corresponding to the parameter resulting in the lowest number of dubious cells; ii) a plot displaying all trustworthy cells corresponding to the parameter resulting in the lowest number of dubious cells. iii) a plot to show the number of dubious embeddings vs parameters
 }
 
 \description{
