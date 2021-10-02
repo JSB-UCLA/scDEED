@@ -266,13 +266,25 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
       levels(bad_graph$data$highlight)[match("Unselected",levels(bad_graph$data$highlight))] <- "Other Cells"
       trust_graph <- Seurat::DimPlot(res$object, reduction = "umap", cells.highlight = list(`Trustworthy cells`= ClassifiedCells_UMAP$UMAP_goodindex), cols.highlight = "blue") 
       levels(trust_graph$data$highlight)[match("Unselected",levels(trust_graph$data$highlight))] <- "Other Cells"
-      output <-list(dub_neighbor, best_para, cell_list[ClassifiedCells_UMAP$UMAP_badindex], cell_list[ClassifiedCells_UMAP$UMAP_goodindex], bad_graph, trust_graph)
+      
+      pbmc_dubious <- data.frame(n_neighbors, dubious_number_UMAP)
+      highlight <- subset(pbmc_dubious, n_neighbors == best_para)
+      pbmc_dubious_plot <- ggplot2::ggplot(data=pbmc_dubious, ggplot2::aes(x=n_neighbors, y=dubious_number_UMAP, group=1))+
+        ggplot2::geom_point(size = 5)+
+        ggplot2::geom_point(data=highlight, ggplot2::aes(x=n_neighbors, y=dubious_number_UMAP), color='cyan',size = 5) +
+        ggplot2::geom_vline(xintercept=highlight$n_neighbors, linetype="dotted") +
+        ggplot2::annotate(geom = "text", x =highlight$n_neighbors, y = 250, label = "optimized",color='cyan',size =6)+
+        ggplot2::labs(x = "n_neighbors", y = "# of dubious cell embeddings") + ggplot2::theme_bw() +
+        ggplot2::theme(text=ggplot2::element_text(size=25),panel.border = ggplot2::element_blank(), panel.grid.major = ggplot2::element_blank(),
+                       panel.grid.minor = ggplot2::element_blank(),axis.text=ggplot2::element_text(size=25), axis.line = ggplot2::element_line(colour = "black"))
+      
+      output <-list(dub_neighbor, best_para, cell_list[ClassifiedCells_UMAP$UMAP_badindex], cell_list[ClassifiedCells_UMAP$UMAP_goodindex], bad_graph, trust_graph, pbmc_dubious_plot)
       
       names(output) <- c("number of dubious cells corresponding to n.neighbors list", "best n.neighbors", 
                          "list of dubious cells corresponding to best n.neighbors",
                          "list of trustworthy cells corresponding to best n.neighbors",
                          "UMAP plot with dubious cells - best n.neighbors", 
-                         "UMAP plot with trustworthy cells - best n.neighbors")
+                         "UMAP plot with trustworthy cells - best n.neighbors", "plot. # of dubious embeddings vs parameters")
       return(output)
        }
     else{
@@ -316,12 +328,24 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
       trust_graph <- Seurat::DimPlot(res$object, reduction = "tsne", cells.highlight = list(`Trustworthy cells`= ClassifiedCells_tSNE$tSNE_goodindex), cols.highlight = "blue") 
       levels(trust_graph$data$highlight)[match("Unselected",levels(trust_graph$data$highlight))] <- "Other Cells"
       
-      output <-list(dub_perplex, best_para, cell_list[ClassifiedCells_tSNE$tSNE_badindex], cell_list[ClassifiedCells_tSNE$tSNE_goodindex],bad_graph, trust_graph)
+      pbmc_dubious <- data.frame(perplexity, dubious_number_tSNE)
+      highlight <- subset(pbmc_dubious, perplexity == best_para)
+      pbmc_dubious_plot <- ggplot2::ggplot(data=pbmc_dubious, ggplot2::aes(x=perplexity, y=dubious_number_tSNE, group=1))+
+        ggplot2::geom_point(size = 5)+
+        ggplot2::geom_point(data=highlight, ggplot2::aes(x=perplexity, y=dubious_number_tSNE), color='cyan',size = 5) +
+        ggplot2::geom_vline(xintercept=highlight$perplexity, linetype="dotted") +
+        ggplot2::annotate(geom = "text", x =highlight$perplexity, y = 250, label = "optimized",color='cyan',size =6)+
+        ggplot2::labs(x = "perplexity", y = "# of dubious cell embeddings") + ggplot2::theme_bw() +
+        ggplot2::theme(text=ggplot2::element_text(size=25),panel.border = ggplot2::element_blank(), panel.grid.major = ggplot2::element_blank(),
+                       panel.grid.minor = ggplot2::element_blank(),axis.text=ggplot2::element_text(size=25), axis.line = ggplot2::element_line(colour = "black"))
+      
+      output <-list(dub_perplex, best_para, cell_list[ClassifiedCells_tSNE$tSNE_badindex], cell_list[ClassifiedCells_tSNE$tSNE_goodindex],bad_graph, trust_graph, pbmc_dubious_plot)
       names(output) <- c("number of dubious cells corresponding to perplexity list", "best perplexity", 
                          "list of dubious cell corresponding to best perplexity",
                          "list of trustworthy cell corresponding to best perplexity",
                          "tSNE plot with dubious cells - best perplexity", 
-                         "tSNE plot with trustworthy cells - best perplexity")
+                         "tSNE plot with trustworthy cells - best perplexity",
+                         "plot. # of dubious embeddings vs parameters")
       return(output)
     }
       else{
