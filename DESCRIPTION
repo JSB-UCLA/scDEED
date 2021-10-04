@@ -9,6 +9,6 @@ Description: scDEED is a statistical method for detecting dubious non-linear emb
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: Seurat(== 3.2.3), distances(== 0.1.8), foreach(== 1.5.0), ggplot2(== 3.3.2), pracma(== 2.2.9), doParallel(== 1.0.15), ggsci(== 2.0), Rfast(== 1.9.9), VGAM(== 1.1.3), rlang(== 0.4.11), fastmap(== 1.1.0)
+Imports: Seurat(== 3.2.3), distances(== 0.1.8), foreach(== 1.5.0), ggplot2(== 3.3.2), pracma(== 2.2.9), doParallel(== 1.0.15), ggsci(== 2.0), Rfast(== 1.9.9), VGAM(== 1.1.3), rlang(== 0.4.11), fastmap(== 1.1.0), Matrix(== 1.3-4)
 Depends: 
     R (>= 2.10)
