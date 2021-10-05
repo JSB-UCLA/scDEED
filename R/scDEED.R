@@ -273,10 +273,10 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
         ggplot2::geom_point(size = 5)+
         ggplot2::geom_point(data=highlight, ggplot2::aes(x=n_neighbors, y=dubious_number_UMAP), color='cyan',size = 5) +
         ggplot2::geom_vline(xintercept=highlight$n_neighbors, linetype="dotted") +
-        ggplot2::annotate(geom = "text", x =highlight$n_neighbors, y = 250, label = "optimized",color='cyan',size =6)+
+        ggplot2::annotate(geom = "text", x =highlight$n_neighbors, y = 250, label = "optimized",color='cyan',size =4, vjust = "inward", hjust = "inward")+
         ggplot2::labs(x = "n_neighbors", y = "# of dubious cell embeddings") + ggplot2::theme_bw() +
-        ggplot2::theme(text=ggplot2::element_text(size=25),panel.border = ggplot2::element_blank(), panel.grid.major = ggplot2::element_blank(),
-                       panel.grid.minor = ggplot2::element_blank(),axis.text=ggplot2::element_text(size=25), axis.line = ggplot2::element_line(colour = "black"))
+        ggplot2::theme(text=ggplot2::element_text(size=20),panel.border = ggplot2::element_blank(), panel.grid.major = ggplot2::element_blank(),
+                       panel.grid.minor = ggplot2::element_blank(),axis.text=ggplot2::element_text(size=20), axis.line = ggplot2::element_line(colour = "black"))
       
       output <-list(dub_neighbor, best_para, cell_list[ClassifiedCells_UMAP$UMAP_badindex], cell_list[ClassifiedCells_UMAP$UMAP_goodindex], bad_graph, trust_graph, pbmc_dubious_plot)
       
@@ -334,10 +334,10 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
         ggplot2::geom_point(size = 5)+
         ggplot2::geom_point(data=highlight, ggplot2::aes(x=perplexity, y=dubious_number_tSNE), color='cyan',size = 5) +
         ggplot2::geom_vline(xintercept=highlight$perplexity, linetype="dotted") +
-        ggplot2::annotate(geom = "text", x =highlight$perplexity, y = 250, label = "optimized",color='cyan',size =6)+
+        ggplot2::annotate(geom = "text", x =highlight$perplexity, y = 250, label = "optimized",color='cyan',size =4, vjust = "inward", hjust = "inward")+
         ggplot2::labs(x = "perplexity", y = "# of dubious cell embeddings") + ggplot2::theme_bw() +
-        ggplot2::theme(text=ggplot2::element_text(size=25),panel.border = ggplot2::element_blank(), panel.grid.major = ggplot2::element_blank(),
-                       panel.grid.minor = ggplot2::element_blank(),axis.text=ggplot2::element_text(size=25), axis.line = ggplot2::element_line(colour = "black"))
+        ggplot2::theme(text=ggplot2::element_text(size=20),panel.border = ggplot2::element_blank(), panel.grid.major = ggplot2::element_blank(),
+                       panel.grid.minor = ggplot2::element_blank(),axis.text=ggplot2::element_text(size=20), axis.line = ggplot2::element_line(colour = "black"))
       
       output <-list(dub_perplex, best_para, cell_list[ClassifiedCells_tSNE$tSNE_badindex], cell_list[ClassifiedCells_tSNE$tSNE_goodindex],bad_graph, trust_graph, pbmc_dubious_plot)
       names(output) <- c("number of dubious cells corresponding to perplexity list", "best perplexity", 
