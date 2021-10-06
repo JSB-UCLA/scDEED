@@ -228,7 +228,7 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
   pbmc <- Seurat::ScaleData(pbmc)
 
   pbmc <- Seurat::RunPCA(pbmc, features = Seurat::VariableFeatures(object = pbmc))
-
+  nsamples <- ncol(pbmc)
   if(use_method == "umap"){
     if (is.null(pbmc@reductions$umap)){
       pbmc <- Seurat::RunUMAP(pbmc, dims = 1:num_pc)
@@ -297,6 +297,10 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
 
   }
   if(use_method == "tsne"){
+    if(nsamples < 91){
+      stop("sample size too small")
+    }
+    
     if(is.null(pbmc@reductions$tsne)){
       pbmc <- Seurat::RunTSNE(pbmc)
     }
@@ -305,7 +309,11 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
     results.PCA <- Distances.PCA.big(pbmc, pbmc.permuted, K = num_pc, perplexity_score = perplexity_score)
     dubious_number_tSNE = rep(0,length(perplexity))
     pbmc.permuted<-Seurat::RunPCA(pbmc.permuted, npcs= num_pc,features = Seurat::VariableFeatures(object = pbmc.permuted))
+    perplexity <- sort(perplexity)
     for (i in 1:length(perplexity)){
+      if(perplexity[i] > floor((nsamples -1)/3)){
+        break
+      }
       results<-ChoosePerplexity(pbmc,pbmc.permuted, num_pc, perplexity[i])
       similarity_score_tSNE <-Cell.Similarity.tSNE(results.PCA$PCA_distances,results.PCA$PCA_distances_permuted,results$tSNE_distances,results$tSNE_distances_permuted, similarity_percent)
       ClassifiedCells_tSNE<-Cell.Classify.tSNE(similarity_score_tSNE$rho_tSNE,similarity_score_tSNE$rho_tSNE_permuted)
