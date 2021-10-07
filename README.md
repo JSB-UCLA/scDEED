@@ -69,6 +69,12 @@ umap_example$`UMAP plot with trustworthy cells`
 UMAP Plot corresponding to the best n.neighbers, highlighting the trustworthy cells:
 <img src="man/figures/umap_trustworthy.png" width="100%" /> 
 
+``` r
+umap_example$`plot. # of dubious embeddings vs parameters`
+```
+Plot of number of dubious embeddings vs parameters for UMAP:
+<img src="man/figures/umap dub em vs parameter.png" width="100%" /> 
+
 ### Example for tsne
 
 ``` r
@@ -106,3 +112,9 @@ tsne_example$`tSNE plot with trustworthy cells`
 ```
 tSNE Plot corresponding to the best n.neightbers, highlighting the trustworthy cells:
 <img src="man/figures/tsne_trustworthy.png" width="100%" /> 
+
+``` r
+tsne_example$`plot. # of dubious embeddings vs parameters`
+```
+Plot of number of dubious embeddings vs parameters for tSNE:
+<img src="man/figures/tsne dub em vs parameter.png" width="100%" /> 
