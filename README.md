@@ -6,6 +6,8 @@
 
 - Choose the suitable dimension for PCA (num_pc)
 
+- Input count matrix should contain cells as columns and genes as rows
+
 ## Installation
 You can install the released version of scDEED from GitHub with:
 
