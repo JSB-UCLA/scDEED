@@ -106,13 +106,13 @@ tsne_example$`best perplexity`
 tsne_example$`tSNE plot with dubious cells`
 ```
 
-tSNE Plot corresponding to the best n.neightbers, highlighting the dubious cells:
+tSNE Plot corresponding to the best perplexity, highlighting the dubious cells:
 <img src="man/figures/tsne_dubious.png" width="100%" /> 
 
 ``` r
 tsne_example$`tSNE plot with trustworthy cells`
 ```
-tSNE Plot corresponding to the best n.neightbers, highlighting the trustworthy cells:
+tSNE Plot corresponding to the best perplexity, highlighting the trustworthy cells:
 <img src="man/figures/tsne_trustworthy.png" width="100%" /> 
 
 ``` r
