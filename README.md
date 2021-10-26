@@ -2,7 +2,7 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # scDEED (single-cell dubious embeddings detector): a statistical method for detecting dubious non-linear embeddings
-- This package is used to determine the reliability of non-linear dimension reduction embeddings. It provides functions to detect dubious cells and trustworthy cells in tSNE and UMAP embeddings. Furthermore, by minimizing the number of dubious cells, functions in this package find the best perplexity parameter of tSNE and the best n.neighbors parameter of UMAP.
+- This package is used to determine the reliability of non-linear dimension reduction embeddings. It provides functions to detect dubious cells and trustworthy cells in tSNE and UMAP embeddings. Furthermore, by minimizing the number of dubious cells, functions in this package find the best perplexity parameter of tSNE and the best n.neighbors/min.dist parameter of UMAP.
 
 - Choose the suitable dimension for PCA (num_pc)
 
@@ -46,17 +46,33 @@ head(umap_example$`number of dubious cells corresponding to n.neighbors list`)
 ```
 |   |  n.neighbors |  number.of.dubious.cells |
 | - | ------------ | ------------------------ |
-| 1 | 	5           | 	42		                    |
-| 2 | 	6           | 	25		                    |
-| 3 | 	7           | 	57		                    |
-| 4 | 	8           | 	20		                    |
-| 5 | 	9           | 	6		                     |
-| 6 | 	10          | 	32		                    |
+| 1 | 	5           | 	7		                    |
+| 2 | 	6           | 	4		                    |
+| 3 | 	7           | 	5		                    |
+| 4 | 	8           | 	2		                    |
+| 5 | 	9           | 	5		                     |
+| 6 | 	10          | 	7		                    |
 
 ``` r
 umap_example$`best n.neighbors`
 ```
-9
+13
+
+```r
+head(umap_example$`number of dubious cells corresponding to min.dist list`)
+```
+|   |  min.dist |  number.of.dubious.cells |
+| - | ------------ | ------------------------ |
+| 1 | 	0.1           | 	11		                    |
+| 2 | 	0.3           | 	9		                    |
+| 3 | 	0.5           | 	4		                    |
+| 4 | 	0.7           | 	7		                    |
+| 5 | 	0.9           | 	2		                     |
+
+```r
+umap_example$`best min.dist`
+```
+0.9
 
 ``` r
 umap_example$`UMAP plot with dubious cells`
@@ -72,10 +88,16 @@ UMAP Plot corresponding to the best n.neighbers, highlighting the trustworthy ce
 <img src="man/figures/umap_trustworthy.png" width="100%" /> 
 
 ``` r
-umap_example$`plot. # of dubious embeddings vs parameters`
+umap_example$`plot. # of dubious embeddings vs n.neighbors`
 ```
 Plot of number of dubious embeddings vs parameters for UMAP:
-<img src="man/figures/umap dub em vs parameter.png" width="100%" /> 
+<img src="man/figures/umap dub em vs n.neighbors.png" width="100%" /> 
+
+``` r
+umap_example$`plot. # of dubious embeddings vs min.dists`
+```
+Plot of number of dubious embeddings vs parameters for UMAP:
+<img src="man/figures/umap dub em vs min.dist.png" width="100%" /> 
 
 ### Example for tsne
 
@@ -89,18 +111,18 @@ head(tsne_example$`number of dubious cells corresponding to perplexity list`)
 
 |   |  perplexity |  number.of.dubious.cells |
 | - | ----------- | ------------------------ |
-| 1 | 	20         | 	30                      |
-| 2 | 	50         | 	50                      |
-| 3 | 	80         | 	20                      |
-| 4 | 	110        | 	14                      |
-| 5 | 	140        | 	23                      |
-| 6 | 	170        | 	23                      |
+| 1 | 	20         | 	14                      |
+| 2 | 	50         | 	9                      |
+| 3 | 	80         | 	4                      |
+| 4 | 	110        | 	5                      |
+| 5 | 	140        | 	5                      |
+| 6 | 	170        | 	5                      |
 
 
 ``` r
 tsne_example$`best perplexity`
 ```
-110
+80
 
 ``` r
 tsne_example$`tSNE plot with dubious cells`
