@@ -42,62 +42,43 @@ umap_example <- umap_tsne_process(pbmc.data , num_pc = 10, use_method = "umap",v
 ```
 
 ``` r
-head(umap_example$`number of dubious cells corresponding to n.neighbors list`)
+head(umap_example$`UMAP plot with dubious cells - best pair of n.neighbors and min.dist`)
 ```
-|   |  n.neighbors |  number.of.dubious.cells |
-| - | ------------ | ------------------------ |
-| 1 | 	5           | 	7		                    |
-| 2 | 	6           | 	4		                    |
-| 3 | 	7           | 	5		                    |
-| 4 | 	8           | 	2		                    |
-| 5 | 	9           | 	5		                     |
-| 6 | 	10          | 	7		                    |
+|   | n.neighbors | min.dist | number of dubious cells |
+|---|-------------|----------|-------------------------|
+| 1 | 5           | 0.1      | 2                       |
+| 2 | 5           | 0.3      | 7                       |
+| 3 | 5           | 0.5      | 17                      |
+| 4 | 5           | 0.7      | 4                       |
+| 5 | 5           | 0.9      | 4                       |
+| 6 | 6           | 0.1      | 5                       |
 
 ``` r
 umap_example$`best n.neighbors`
 ```
-13
+9.0, 0.1
 
-```r
-head(umap_example$`number of dubious cells corresponding to min.dist list`)
-```
-|   |  min.dist |  number.of.dubious.cells |
-| - | ------------ | ------------------------ |
-| 1 | 	0.1           | 	11		                    |
-| 2 | 	0.3           | 	9		                    |
-| 3 | 	0.5           | 	4		                    |
-| 4 | 	0.7           | 	7		                    |
-| 5 | 	0.9           | 	2		                     |
-
-```r
-umap_example$`best min.dist`
-```
-0.9
 
 ``` r
-umap_example$`UMAP plot with dubious cells`
+umap_example$`UMAP plot with dubious cells - best pair of n.neighbors and min.dist`
 ```
 
-UMAP Plot corresponding to the best n.neighbers, highlighting the dubious cells:
-<img src="man/figures/umap_dubious.png" width="100%" /> 
-
-``` r
-umap_example$`UMAP plot with trustworthy cells`
-```
-UMAP Plot corresponding to the best n.neighbers, highlighting the trustworthy cells:
-<img src="man/figures/umap_trustworthy.png" width="100%" /> 
+UMAP Plot corresponding to the best pair of n.neighbers and min.dist, highlighting the dubious cells:
+<img src="man/figures/nm_dub_plot.png" width="100%" /> 
 
 ``` r
-umap_example$`plot. # of dubious embeddings vs n.neighbors`
+umap_example$`UMAP plot with trustworthy cells - best pair of n.neighbors and min.dist`
 ```
-Plot of number of dubious embeddings vs parameters for UMAP:
-<img src="man/figures/umap dub em vs n.neighbors.png" width="100%" /> 
+UMAP Plot corresponding to the best pair of n.neighbers and min.dist, highlighting the trustworthy cells:
+<img src="man/figures/nm_tru_plot.png" width="100%" /> 
 
 ``` r
-umap_example$`plot. # of dubious embeddings vs min.dists`
+umap_example$`plot. # of dubious embeddings vs pair of n.neighbors and min.dist`
 ```
-Plot of number of dubious embeddings vs parameters for UMAP:
-<img src="man/figures/umap dub em vs min.dist.png" width="100%" /> 
+Plot of number of dubious embeddings vs pair of n.neighbors and min.dist for UMAP:
+<img src="man/figures/nm_vs_dub.png" width="100%" /> 
+
+
 
 ### Example for tsne
 

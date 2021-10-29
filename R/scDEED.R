@@ -247,7 +247,37 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
     final_neib <- default_neib
     final_min <- default_min
     
-    if(optimize_neib == TRUE){
+    if(optimize_neib == TRUE && optimize_min == TRUE){
+      tot_length <- length(n_neighbors) * length(min.dist)
+      dubious_number_UMAP = matrix(nrow = tot_length, ncol = 3)
+      row_count <- 1
+      for (i in 1:length(n_neighbors)) {
+        for(j in 1:length(min.dist)){
+          results<-ChoosenNeighbors(pbmc,pbmc.permuted, "pca", num_pc, n_neighbors[i], m = min.dist[j])
+          
+          similarity_score_UMAP <-Cell.Similarity.UMAP(results.PCA$PCA_distances,results.PCA$PCA_distances_permuted,results$UMAP_distances,results$UMAP_distances_permuted, similarity_percent)
+          
+          ClassifiedCells_UMAP<-Cell.Classify.UMAP(similarity_score_UMAP$rho_UMAP,similarity_score_UMAP$rho_UMAP_permuted)
+          
+          dubious_number_UMAP[row_count, 1] <- n_neighbors[i]
+          dubious_number_UMAP[row_count, 2] <- min.dist[j]
+          dubious_number_UMAP[row_count, 3] = length(ClassifiedCells_UMAP$UMAP_badindex)
+          row_count <- row_count + 1
+        }
+      }
+      all_dub <- dubious_number_UMAP[, 3]
+      best_para <- dubious_number_UMAP[which(all_dub == min(all_dub)),c(1, 2)]
+      if(!is.null(nrow(best_para) )){
+        row_sum <- rowSums(best_para)
+        best_para <- best_para[which(row_sum == min(row_sum)) , ]
+      }
+      dub_para <- as.data.frame(dubious_number_UMAP)
+      colnames(dub_para) <- c("n.neighbors", "min.dist", "number of dubious cells")
+      final_neib <- best_para[1]
+      final_min <- best_para[2]
+    }
+    
+    if(optimize_neib == TRUE && optimize_min == FALSE){
       dubious_number_UMAP_neib = rep(0,length(n_neighbors))
       for (i in 1:length(n_neighbors)){
         results<-ChoosenNeighbors(pbmc,pbmc.permuted, "pca", num_pc, n_neighbors[i], m = default_min)
@@ -270,7 +300,7 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
     }
     
     
-    if(optimize_min == TRUE){
+    if(optimize_min == TRUE && optimize_neib == FALSE){
     dubious_number_UMAP_min = rep(0,length(min.dist))
     for (i in 1:length(min.dist)){
       results<-ChoosenNeighbors(pbmc,pbmc.permuted, "pca", num_pc, n = default_neib ,m = min.dist[i])
@@ -306,7 +336,7 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
       levels(trust_graph$data$highlight)[match("Unselected",levels(trust_graph$data$highlight))] <- "Other Cells"
       
 #      pbmc_dubious <- data.frame(n_neighbors, dubious_number_UMAP)
-      if(optimize_neib == TRUE){
+      if(optimize_neib == TRUE && optimize_min == FALSE){
         highlight_neib <- subset(dub_neighbor, n.neighbors == best_para_neib)
         pbmc_dubious_plot_neib <- ggplot2::ggplot(data=dub_neighbor, ggplot2::aes(x=n.neighbors, y=number.of.dubious.cells, group=1))+
           ggplot2::geom_point(size = 5)+
@@ -316,9 +346,15 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
           ggplot2::labs(x = "n.neighbors", y = "# of dubious cell embeddings") + ggplot2::theme_bw() +
           ggplot2::theme(text=ggplot2::element_text(size=20),panel.border = ggplot2::element_blank(), panel.grid.major = ggplot2::element_blank(),
                          panel.grid.minor = ggplot2::element_blank(),axis.text=ggplot2::element_text(size=20), axis.line = ggplot2::element_line(colour = "black"))
+        output <-list(dub_neighbor, best_para_neib, cell_list[ClassifiedCells_UMAP$UMAP_badindex], cell_list[ClassifiedCells_UMAP$UMAP_goodindex], bad_graph, trust_graph, pbmc_dubious_plot_neib)
+        
+        names(output) <- c("number of dubious cells corresponding to n.neighbors list", "best n.neighbors", 
+                           "list of dubious cells corresponding to best n.neighbors",
+                           "list of trustworthy cells corresponding to best n.neighbors",
+                           "UMAP plot with dubious cells - best n.neighbors", 
+                           "UMAP plot with trustworthy cells - best n.neighbors", "plot. # of dubious embeddings vs parameters")
       }
-      
-      if(optimize_min == TRUE){
+       else if(optimize_neib == FALSE && optimize_min == TRUE){
         highlight_min <- subset(dub_min_dist, min.dist == best_para_min)
         pbmc_dubious_plot_min <- ggplot2::ggplot(data=dub_min_dist, ggplot2::aes(x=min.dist, y=number.of.dubious.cells, group=1))+
           ggplot2::geom_point(size = 5)+
@@ -328,18 +364,6 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
           ggplot2::labs(x = "min.dist", y = "# of dubious cell embeddings") + ggplot2::theme_bw() +
           ggplot2::theme(text=ggplot2::element_text(size=20),panel.border = ggplot2::element_blank(), panel.grid.major = ggplot2::element_blank(),
                          panel.grid.minor = ggplot2::element_blank(),axis.text=ggplot2::element_text(size=20), axis.line = ggplot2::element_line(colour = "black"))
-      }
-      
-      if(optimize_neib == TRUE && optimize_min == FALSE){
-        output <-list(dub_neighbor, best_para_neib, cell_list[ClassifiedCells_UMAP$UMAP_badindex], cell_list[ClassifiedCells_UMAP$UMAP_goodindex], bad_graph, trust_graph, pbmc_dubious_plot_neib)
-        
-        names(output) <- c("number of dubious cells corresponding to n.neighbors list", "best n.neighbors", 
-                           "list of dubious cells corresponding to best n.neighbors",
-                           "list of trustworthy cells corresponding to best n.neighbors",
-                           "UMAP plot with dubious cells - best n.neighbors", 
-                           "UMAP plot with trustworthy cells - best n.neighbors", "plot. # of dubious embeddings vs parameters")
-      }
-      else if(optimize_neib == FALSE && optimize_min == TRUE){
         output <-list(dub_min_dist, best_para_min, cell_list[ClassifiedCells_UMAP$UMAP_badindex], cell_list[ClassifiedCells_UMAP$UMAP_goodindex], bad_graph, trust_graph, pbmc_dubious_plot_min)
         
         names(output) <- c("number of dubious cells corresponding to min.dist list", "best min.dist", 
@@ -349,20 +373,27 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
                            "UMAP plot with trustworthy cells - best min.dist", "plot. # of dubious embeddings vs parameters")
       }
       else if(optimize_neib == TRUE && optimize_min == TRUE){
-        output <-list(dub_neighbor, best_para_neib,
-          dub_min_dist, best_para_min, 
+        highlight <- subset(dub_para, n.neighbors == best_para[1] & min.dist == best_para[2])
+        pbmc_dubious_plot <- ggplot2::ggplot(data = dub_para, ggplot2::aes(x = n.neighbors, y = min.dist, color = `number of dubious cells`)) + ggplot2::geom_point() +
+          #ggplot2::geom_point(data = highlight, ggplot2::aes(x = n.neighbors, y = min.dist, color = "cyan"), show.legend = FALSE) +
+          ggplot2::scale_color_gradient(low="blue", high="red") +
+          ggplot2::geom_vline(xintercept = highlight$n.neighbors) + ggplot2::annotate(geom = "text", x =highlight$n.neighbors, y = max(dub_para[, 2]), label = "optimized",color='cyan',size =4, vjust = "inward", hjust = "inward") +
+          ggplot2::geom_hline(yintercept = highlight$min.dist) + ggplot2::annotate(geom = "text", x = max(dub_para[, 1]), y = highlight$min.dist, label = "optimized",color='cyan',size =4, vjust = "inward", hjust = "inward") +
+          ggplot2::labs(x = "n.neighbors", y = "min.dist") + ggplot2::theme_bw() +
+          ggplot2::theme(text=ggplot2::element_text(size=20),panel.border = ggplot2::element_blank(), panel.grid.major = ggplot2::element_blank(),
+                         panel.grid.minor = ggplot2::element_blank(),axis.text=ggplot2::element_text(size=20), axis.line = ggplot2::element_line(colour = "black"))
+        
+        output <-list(dub_para, best_para, 
                       cell_list[ClassifiedCells_UMAP$UMAP_badindex], cell_list[ClassifiedCells_UMAP$UMAP_goodindex], 
                       bad_graph, trust_graph, 
-          pbmc_dubious_plot_neib,
-                      pbmc_dubious_plot_min)
+          pbmc_dubious_plot)
         
-        names(output) <- c("number of dubious cells corresponding to n.neighbors list", "best n.neighbors",
-          "number of dubious cells corresponding to min.dist list", "best min.dist", 
-                           "list of dubious cells corresponding to best n.neighbors and min.dist",
-                           "list of trustworthy cells corresponding to best n.neighbors and min.dist",
-                           "UMAP plot with dubious cells - best n.neighbors and min.dist", 
-                           "UMAP plot with trustworthy cells - best n.neighbors and min.dist", 
-          "plot. # of dubious embeddings vs parameters(n.neighbers)", "plot. # of dubious embeddings vs parameters(min.dist)")
+        names(output) <- c("number of dubious cells corresponding to pair of n.neighbors and min.dist list", "best pair of n.neighbors and min.dist",
+                           "list of dubious cells corresponding to best pair of n.neighbors and min.dist",
+                           "list of trustworthy cells corresponding to best pair of n.neighbors and min.dist",
+                           "UMAP plot with dubious cells - best pair of n.neighbors and min.dist", 
+                           "UMAP plot with trustworthy cells - best pair of n.neighbors and min.dist", 
+          "plot. # of dubious embeddings vs pair of n.neighbors and min.dist")
       }
       else{
         output <-list(cell_list[ClassifiedCells_UMAP$UMAP_badindex], cell_list[ClassifiedCells_UMAP$UMAP_goodindex], 
@@ -388,11 +419,11 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
                            "list of dubious cells corresponding to best min.dist",
                            "list of trustworthy cells corresponding to best min.dist")}
       else if(optimize_neib == TRUE && optimize_min == TRUE){
-        output <-list(dub_neighbor, best_para_neib, dub_min_dist, best_para_min, cell_list[ClassifiedCells_UMAP$UMAP_badindex], cell_list[ClassifiedCells_UMAP$UMAP_goodindex])
-        names(output) <- c("number of dubious cells corresponding to n.neighbors list", "best n.neighbors",
-          "number of dubious cells corresponding to min.dist list", "best min.dist", 
-                           "list of dubious cells corresponding to best n.neighber and min.dist",
-                           "list of trustworthy cells corresponding to best n.neighber and min.dist")}
+        output <-list(dub_para, best_para, cell_list[ClassifiedCells_UMAP$UMAP_badindex], cell_list[ClassifiedCells_UMAP$UMAP_goodindex])
+        names(output) <- c("number of dubious cells corresponding to pair of n.neighbors and min.dist list", 
+                           "best pair of n.neighbors and min.dist",
+                           "list of dubious cells corresponding to best pair of n.neighber and min.dist",
+                           "list of trustworthy cells corresponding to best pair of n.neighber and min.dist")}
       else{
         output <-list(cell_list[ClassifiedCells_UMAP$UMAP_badindex], cell_list[ClassifiedCells_UMAP$UMAP_goodindex])
         names(output) <- c(
