@@ -90,7 +90,7 @@ tsne_example <- umap_tsne_process(pbmc.data, num_pc = 10, use_method = "tsne",vi
 head(tsne_example$`number of dubious cells corresponding to perplexity list`)
 ```
 
-|   |  perplexity |  number.of.dubious.cells |
+|   |  perplexity |  number of dubious cells |
 | - | ----------- | ------------------------ |
 | 1 | 	20         | 	14                      |
 | 2 | 	50         | 	9                      |
