@@ -296,6 +296,7 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
         best_para_neib <- min(best_para_neib)
       }
       dub_neighbor <- data.frame("n.neighbors" = n_neighbors, "number of dubious cells" = dubious_number_UMAP_neib)
+      colnames(dub_neighbor) <- c("n.neighbors", "number of dubious cells")
       final_neib <- best_para_neib
     }
     
@@ -318,6 +319,7 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
       }
       
       dub_min_dist <- data.frame("min.dist" = min.dist, "number of dubious cells" = dubious_number_UMAP_min)
+      colnames(dub_min_dist) <- c("min.dist", "number of dubious cells")
       final_min <- best_para_min
     }
     
@@ -465,6 +467,7 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
       best_para <- min(best_para)
     }
     dub_perplex <- data.frame("perplexity" = perplexity, "number of dubious cells" = dubious_number_tSNE)
+    colnames(dub_perplex) <- c("perplexity", "number of dubious cells")
     res <- ChoosePerplexity(pbmc,pbmc.permuted, num_pc, best_para)
     similarity_score_tSNE <-Cell.Similarity.tSNE(results.PCA$PCA_distances,results.PCA$PCA_distances_permuted,res$tSNE_distances,res$tSNE_distances_permuted,similarity_percent)
     
