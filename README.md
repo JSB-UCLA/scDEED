@@ -33,7 +33,7 @@ chooseK(pbmc.data)
 ```
 ChooseK plot:
 
-<img src="man/figures/chooseK_ex.png" width="100%" /> 
+<img src="man/figures/10000_cell_pca.png" width="100%" /> 
 
 ### Example for umap
 
@@ -59,18 +59,15 @@ umap_example$`best n.neighbors`
 9.0, 0.1
 
 
-``` r
-umap_example$`UMAP plot with dubious cells - best pair of n.neighbors and min.dist`
-```
+Comparative UMAP plots of the randomly selected 10000 cells from Hydra dataset under the n.neighbors 50, min.dist 0.7 and the n.neighbors 5, min.dist 0.5
+optimized by scDEED:
 
-UMAP Plot corresponding to the best pair of n.neighbers and min.dist, highlighting the dubious cells:
-<img src="man/figures/nm_dub_plot.png" width="100%" /> 
+Before optimization:
+<img src="man/figures/10000_umap_original.png" width="100%" />
 
-``` r
-umap_example$`UMAP plot with trustworthy cells - best pair of n.neighbors and min.dist`
-```
-UMAP Plot corresponding to the best pair of n.neighbers and min.dist, highlighting the trustworthy cells:
-<img src="man/figures/nm_tru_plot.png" width="100%" /> 
+After optimization:
+<img src="man/figures/10000_umap_optimized.png" width="100%" />
+
 
 ``` r
 umap_example$`plot. # of dubious embeddings vs pair of n.neighbors and min.dist`
@@ -105,21 +102,19 @@ tsne_example$`best perplexity`
 ```
 80
 
-``` r
-tsne_example$`tSNE plot with dubious cells`
-```
 
-tSNE Plot corresponding to the best perplexity, highlighting the dubious cells:
-<img src="man/figures/tsne_dubious.png" width="100%" /> 
 
-``` r
-tsne_example$`tSNE plot with trustworthy cells`
-```
-tSNE Plot corresponding to the best perplexity, highlighting the trustworthy cells:
-<img src="man/figures/tsne_trustworthy.png" width="100%" /> 
+Comparative tSNE plots of the randomly selected 10000 cells from Hydra dataset under the perplexity 20 and the perplexity 50
+optimized by scDEED:
+
+Before optimization:
+<img src="man/figures/10000_tsne_original.png" width="100%" /> 
+
+After optimization:
+<img src="man/figures/10000_tsne_optimized.png" width="100%" /> 
 
 ``` r
 tsne_example$`plot. # of dubious embeddings vs parameters`
 ```
 Plot of number of dubious embeddings vs parameters for tSNE:
-<img src="man/figures/tsne dub em vs parameter.png" width="100%" /> 
+<img src="man/figures/tsne_per_dub.png" width="100%" /> 

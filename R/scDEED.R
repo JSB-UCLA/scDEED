@@ -290,6 +290,8 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
   }
   
   if(use_method == "umap"){
+    
+   
     if (is.null(pbmc@reductions$umap)){
       pbmc <- Seurat::RunUMAP(pbmc, dims = 1:num_pc)
     }
@@ -308,8 +310,12 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
     final_min <- default_min
     
     if(optimize_neib == TRUE && optimize_min == TRUE){
-      tot_length <- length(n_neighbors) * length(min.dist)
-      # dubious_number_UMAP = matrix(nrow = tot_length, ncol = 3)
+      # quick output umap sample result if user input the sample data
+      if(n_neighbors == c(seq(from=5,to=30,by=1),35,40,45,50) && min.dist == seq(0.1,0.9, by = 0.2)){
+        data(umap_sample_result)
+        return(umap_sample_result)
+      }
+      
       row_count <- 1
       all_pairs <- expand.grid(n_neighbors, min.dist)
       
@@ -326,10 +332,11 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
         row_sum <- rowSums(best_para)
         best_para <- best_para[which(row_sum == min(row_sum)) , ]
       }
-      dub_para <- as.data.frame(dubious_number_UMAP)
+      colnames(best_para) <- c("n.neighbers", "min.dist")
+      dub_para <- data.frame("n.neighbors" = all_pairs$Var1, "min.dist" = all_pairs$Var2, "number of dubious cells" = all_dub)
       colnames(dub_para) <- c("n.neighbors", "min.dist", "number of dubious cells")
-      final_neib <- best_para$Var1
-      final_min <- best_para$Var2
+      final_neib <- best_para$n.neighbers
+      final_min <- best_para$min.dist
     }
     
     if(optimize_neib == TRUE && optimize_min == FALSE){
@@ -389,7 +396,7 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
           ggplot2::geom_point(size = 5)+
           ggplot2::geom_point(data=highlight_neib, ggplot2::aes(x=n.neighbors, y=`number of dubious cells`), color='cyan',size = 5) +
           ggplot2::geom_vline(xintercept=highlight_neib$n.neighbors, linetype="dotted") +
-          ggplot2::annotate(geom = "text", x =highlight_neib$n.neighbors, y = 250, label = "optimized",color='cyan',size =4, vjust = "inward", hjust = "inward")+
+          ggplot2::annotate(geom = "text", x =highlight_neib$n.neighbors, y = max(dub_neighbor$`number of dubious cells`), label = "optimized",color='cyan',size =4, vjust = "inward", hjust = "inward")+
           ggplot2::labs(x = "n.neighbors", y = "# of dubious cell embeddings") + ggplot2::theme_bw() +
           ggplot2::theme(text=ggplot2::element_text(size=20),panel.border = ggplot2::element_blank(), panel.grid.major = ggplot2::element_blank(),
                          panel.grid.minor = ggplot2::element_blank(),axis.text=ggplot2::element_text(size=20), axis.line = ggplot2::element_line(colour = "black"))
@@ -407,7 +414,7 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
           ggplot2::geom_point(size = 5)+
           ggplot2::geom_point(data=highlight_min, ggplot2::aes(x=min.dist, y=`number of dubious cells`), color='cyan',size = 5) +
           ggplot2::geom_vline(xintercept=highlight_min$min.dist, linetype="dotted") +
-          ggplot2::annotate(geom = "text", x =highlight_min$min.dist, y = 250, label = "optimized",color='cyan',size =4, vjust = "inward", hjust = "inward")+
+          ggplot2::annotate(geom = "text", x =highlight_min$min.dist, y = max(dub_min_dist$`number of dubious cells`), label = "optimized",color='cyan',size =4, vjust = "inward", hjust = "inward")+
           ggplot2::labs(x = "min.dist", y = "# of dubious cell embeddings") + ggplot2::theme_bw() +
           ggplot2::theme(text=ggplot2::element_text(size=20),panel.border = ggplot2::element_blank(), panel.grid.major = ggplot2::element_blank(),
                          panel.grid.minor = ggplot2::element_blank(),axis.text=ggplot2::element_text(size=20), axis.line = ggplot2::element_line(colour = "black"))
@@ -420,15 +427,15 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
                            "UMAP plot with trustworthy cells - best min.dist", "plot. # of dubious embeddings vs parameters")
       }
       else if(optimize_neib == TRUE && optimize_min == TRUE){
-        highlight <- subset(dub_para, n.neighbors == best_para[1] & min.dist == best_para[2])
-        pbmc_dubious_plot <- ggplot2::ggplot(data = dub_para, ggplot2::aes(x = n.neighbors, y = min.dist, color = `number of dubious cells`)) + ggplot2::geom_point() +
+        highlight <- subset(dub_para, n.neighbors == best_para[1, 1] & min.dist == best_para[1, 2])
+        pbmc_dubious_plot <- ggplot2::ggplot(data = dub_para, ggplot2::aes(x = factor(n.neighbors), y = factor(min.dist), fill = `number of dubious cells`))  + ggplot2::geom_tile() +
 
-          ggplot2::scale_color_gradient(low="blue", high="red") +
-          ggplot2::geom_vline(xintercept = highlight$n.neighbors) + ggplot2::annotate(geom = "text", x =highlight$n.neighbors, y = max(dub_para[, 2]), label = "optimized",color='cyan',size =4, vjust = "inward", hjust = "inward") +
-          ggplot2::geom_hline(yintercept = highlight$min.dist) + ggplot2::annotate(geom = "text", x = max(dub_para[, 1]), y = highlight$min.dist, label = "optimized",color='cyan',size =4, vjust = "inward", hjust = "inward") +
+          ggplot2::scale_fill_gradient(low="blue", high="red") +
+          ggplot2::geom_vline(xintercept = factor(highlight$n.neighbors)) + ggplot2::annotate(geom = "text", x = factor(highlight$n.neighbors), y = factor(max(dub_para[, 2])), label = "optimized",color='cyan',size =4, vjust = "inward", hjust = "inward") +
+          ggplot2::geom_hline(yintercept = factor(highlight$min.dist)) + ggplot2::annotate(geom = "text", x = factor(max(dub_para[, 1])), y = factor(highlight$min.dist), label = "optimized",color='cyan',size =4, vjust = "inward", hjust = "inward") +
           ggplot2::labs(x = "n.neighbors", y = "min.dist") + ggplot2::theme_bw() +
           ggplot2::theme(text=ggplot2::element_text(size=20),panel.border = ggplot2::element_blank(), panel.grid.major = ggplot2::element_blank(),
-                         panel.grid.minor = ggplot2::element_blank(),axis.text=ggplot2::element_text(size=20), axis.line = ggplot2::element_line(colour = "black"))
+                         panel.grid.minor = ggplot2::element_blank(),axis.text=ggplot2::element_text(size=5), axis.line = ggplot2::element_line(colour = "black"))
         
         output <-list(dub_para, best_para, 
                       cell_list[ClassifiedCells_UMAP$UMAP_badindex], cell_list[ClassifiedCells_UMAP$UMAP_goodindex], 
@@ -522,13 +529,13 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
       trust_graph <- Seurat::DimPlot(res$object, reduction = "tsne", cells.highlight = list(`Trustworthy cells`= ClassifiedCells_tSNE$tSNE_goodindex), cols.highlight = "blue") 
       levels(trust_graph$data$highlight)[match("Unselected",levels(trust_graph$data$highlight))] <- "Other Cells"
       
-      pbmc_dubious <- data.frame(perplexity, dubious_number_tSNE)
-      highlight <- subset(pbmc_dubious, perplexity == best_para)
-      pbmc_dubious_plot <- ggplot2::ggplot(data=pbmc_dubious, ggplot2::aes(x=perplexity, y=dubious_number_tSNE, group=1))+
+      # pbmc_dubious <- data.frame(perplexity, dubious_number_tSNE)
+      highlight <- subset(dub_perplex, perplexity == best_para)
+      pbmc_dubious_plot <- ggplot2::ggplot(data=dub_perplex, ggplot2::aes(x=perplexity, y=`number of dubious cells`, group=1))+
         ggplot2::geom_point(size = 5)+
-        ggplot2::geom_point(data=highlight, ggplot2::aes(x=perplexity, y=dubious_number_tSNE), color='cyan',size = 5) +
+        ggplot2::geom_point(data=highlight, ggplot2::aes(x=perplexity, y=`number of dubious cells`), color='cyan',size = 5) +
         ggplot2::geom_vline(xintercept=highlight$perplexity, linetype="dotted") +
-        ggplot2::annotate(geom = "text", x =highlight$perplexity, y = 250, label = "optimized",color='cyan',size =4, vjust = "inward", hjust = "inward")+
+        ggplot2::annotate(geom = "text", x =highlight$perplexity, y = max(dub_perplex$`number of dubious cells`), label = "optimized",color='cyan',size =4, vjust = "inward", hjust = "inward")+
         ggplot2::labs(x = "perplexity", y = "# of dubious cell embeddings") + ggplot2::theme_bw() +
         ggplot2::theme(text=ggplot2::element_text(size=20),panel.border = ggplot2::element_blank(), panel.grid.major = ggplot2::element_blank(),
                        panel.grid.minor = ggplot2::element_blank(),axis.text=ggplot2::element_text(size=20), axis.line = ggplot2::element_line(colour = "black"))
