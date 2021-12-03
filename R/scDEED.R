@@ -311,10 +311,10 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
     
     if(optimize_neib == TRUE && optimize_min == TRUE){
       # quick output umap sample result if user input the sample data
-      if(n_neighbors == c(seq(from=5,to=30,by=1),35,40,45,50) && min.dist == seq(0.1,0.9, by = 0.2)){
-        data(umap_sample_result)
-        return(umap_sample_result)
-      }
+      # if(n_neighbors == c(seq(from=5,to=30,by=1),35,40,45,50) && min.dist == seq(0.1,0.9, by = 0.2)){
+      #   data(umap_sample_result)
+      #   return(umap_sample_result)
+      # }
       
       row_count <- 1
       all_pairs <- expand.grid(n_neighbors, min.dist)
