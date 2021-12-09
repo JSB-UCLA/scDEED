@@ -208,6 +208,14 @@ tsne_optimize = function(pbmc, pbmc.permuted, num_pc, perplexity, results.PCA, s
 
 umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1),35,40,45,50), min.dist = seq(0.1,0.9, by = 0.2), similarity_percent = 0.5, visualization = FALSE, use_method = "umap",
                              perplexity = c(seq(from=20,to=410,by=30),seq(from=450,to=800,by=50)), perplexity_score = 30, optimize_neib = TRUE ,optimize_min = TRUE){
+  # check if user just want to see the demo output 
+  
+  data(input_counts)
+  demo_tsne <- (identical(pbmc,input_counts) && perplexity == c(seq(from=20,to=410,by=30),seq(from=450,to=800,by=50)))
+  demo_umap_mn <- (identical(pbmc,input_counts) && n_neighbors == c(seq(from=5,to=30,by=1),35,40,45,50) && min.dist == seq(0.1,0.9, by = 0.2))
+  demo_umap_n <- (identical(pbmc,input_counts) && n_neighbors == c(seq(from=5,to=30,by=1),35,40,45,50))
+  demo_umap_m <- (identical(pbmc,input_counts) && min.dist == seq(0.1,0.9, by = 0.2))
+  
   if(class(pbmc) != "Seurat"){
     dupli <- duplicated(colnames(pbmc))
     if(length(which(dupli == TRUE)) != 0){
@@ -311,21 +319,27 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
     
     if(optimize_neib == TRUE && optimize_min == TRUE){
       # quick output umap sample result if user input the sample data
-      # if(n_neighbors == c(seq(from=5,to=30,by=1),35,40,45,50) && min.dist == seq(0.1,0.9, by = 0.2)){
-      #   data(umap_sample_result)
-      #   return(umap_sample_result)
-      # }
+      if(demo_umap_mn){
+        data(umap_nm_table)
+        dubious_number_UMAP <- umap_nm_table
+        dub_para <- umap_nm_table
+        all_dub <- umap_nm_table$`number of dubious cells`
+      }
+      else{
+        all_pairs <- expand.grid(n_neighbors, min.dist)
+        
+        all_dub <-foreach::`%do%`(foreach::foreach(n = all_pairs$Var1, m = all_pairs$Var2, .combine = "c"), umap_optimize(pbmc = pbmc, pbmc.permuted = pbmc.permuted,
+                                                                                                                          reduction.method = "pca", K = num_pc,
+                                                                                                                          n = n, m = m, results.PCA = results.PCA, similarity_percent = similarity_percent) 
+        )
+        dubious_number_UMAP <- cbind(all_pairs, all_dub)
+        
+        dub_para <- data.frame("n.neighbors" = all_pairs$Var1, "min.dist" = all_pairs$Var2, "number of dubious cells" = all_dub)
+        colnames(dub_para) <- c("n.neighbors", "min.dist", "number of dubious cells")
+      }
+ 
+    
       
-      row_count <- 1
-      all_pairs <- expand.grid(n_neighbors, min.dist)
-      
-      all_dub <-foreach::`%do%`(foreach::foreach(n = all_pairs$Var1, m = all_pairs$Var2, .combine = "c"), umap_optimize(pbmc = pbmc, pbmc.permuted = pbmc.permuted,
-                                                                                                               reduction.method = "pca", K = num_pc,
-                                                                                                               n = n, m = m, results.PCA = results.PCA, similarity_percent = similarity_percent) 
-                      )
-      
-      
-      dubious_number_UMAP <- cbind(all_pairs, all_dub)
       
       best_para <- dubious_number_UMAP[which(all_dub == min(all_dub)),c(1, 2)]
       if(!is.null(nrow(best_para) )){
@@ -333,18 +347,26 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
         best_para <- best_para[which(row_sum == min(row_sum)) , ]
       }
       colnames(best_para) <- c("n.neighbers", "min.dist")
-      dub_para <- data.frame("n.neighbors" = all_pairs$Var1, "min.dist" = all_pairs$Var2, "number of dubious cells" = all_dub)
-      colnames(dub_para) <- c("n.neighbors", "min.dist", "number of dubious cells")
+
       final_neib <- best_para$n.neighbers
       final_min <- best_para$min.dist
     }
     
     if(optimize_neib == TRUE && optimize_min == FALSE){
       
-      dubious_number_UMAP_neib <-foreach::`%do%`(foreach::foreach(n = n_neighbors, .combine = "c"), umap_optimize(pbmc = pbmc, pbmc.permuted = pbmc.permuted,
-                                                                                                                                         reduction.method = "pca", K = num_pc,
-                                                                                                                                         n = n, m = default_min, results.PCA = results.PCA, similarity_percent = similarity_percent) 
-      )
+      # quick result
+      if(demo_umap_n){
+        data(umap_n_table)
+        dubious_number_UMAP_neib <- umap_n_table$`number of dubious cells`
+      }
+      else{
+        dubious_number_UMAP_neib <-foreach::`%do%`(foreach::foreach(n = n_neighbors, .combine = "c"), umap_optimize(pbmc = pbmc, pbmc.permuted = pbmc.permuted,
+                                                                                                                    reduction.method = "pca", K = num_pc,
+                                                                                                                    n = n, m = default_min, results.PCA = results.PCA, similarity_percent = similarity_percent) 
+        )
+      }
+      
+      
       best_para_neib <- n_neighbors[which(dubious_number_UMAP_neib == min(dubious_number_UMAP_neib))]
       
       
@@ -359,11 +381,18 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
     
     if(optimize_min == TRUE && optimize_neib == FALSE){
     
+      # quick result
+      if(demo_umap_m){
+        data(umap_m_table)
+        dubious_number_UMAP_min <- umap_m_table$`number of dubious cells`
+      }
+      else{
+        dubious_number_UMAP_min <- foreach::`%do%`(foreach::foreach(m = min.dist, .combine = "c"), umap_optimize(pbmc = pbmc, pbmc.permuted = pbmc.permuted,
+                                                                                                                 reduction.method = "pca", K = num_pc,
+                                                                                                                 n = default_neib, m = m, results.PCA = results.PCA, similarity_percent = similarity_percent) 
+        )
+      }
       
-      dubious_number_UMAP_min <- foreach::`%do%`(foreach::foreach(m = min.dist, .combine = "c"), umap_optimize(pbmc = pbmc, pbmc.permuted = pbmc.permuted,
-                                                                                                                  reduction.method = "pca", K = num_pc,
-                                                                                                                  n = default_neib, m = m, results.PCA = results.PCA, similarity_percent = similarity_percent) 
-      )
       
       best_para_min <- min.dist[which(dubious_number_UMAP_min == min(dubious_number_UMAP_min))]
       if(length(best_para_min) != 0){
@@ -507,9 +536,18 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
     perplexity <- sort(perplexity)
     perplexity <- perplexity[perplexity <= floor((nsamples -1)/3)]
     
-    dubious_number_tSNE <-foreach::`%do%`(foreach::foreach(p = perplexity, .combine = "c"), tsne_optimize(pbmc, pbmc.permuted, num_pc, perplexity = p, results.PCA, similarity_percent) 
-    )
+
     
+
+    
+    if(demo_tsne){
+      data(tsne_table)
+      dubious_number_tSNE <- tsne_table$`number of dubious cells`
+    }
+    else{
+      dubious_number_tSNE <-foreach::`%do%`(foreach::foreach(p = perplexity, .combine = "c"), tsne_optimize(pbmc, pbmc.permuted, num_pc, perplexity = p, results.PCA, similarity_percent) 
+      )
+    }
     
     best_para <- perplexity[which(dubious_number_tSNE == min(dubious_number_tSNE))]
     if(length(best_para) != 0){
