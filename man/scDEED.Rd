@@ -1,16 +1,16 @@
-\name{umap_tsne_process}
-\alias{umap_tsne_process}
+\name{scDEED}
+\alias{scDEED}
 
 \title{
 Dubious cells detector under tSNE and UMAP
 }
 
 \usage{
-umap_tsne_process(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1),35,40,45,50), min.dist = seq(0.1,0.9, by = 0.2), similarity_percent = 0.5, visualization = FALSE, use_method = "umap", perplexity = c(seq(from=20,to=410,by=30),seq(from=450,to=800,by=50)), perplexity_score = 30, optimize_neib = TRUE ,optimize_min = TRUE)
+scDEED(input_data, num_pc, n_neighbors = c(seq(from=5,to=30,by=1),35,40,45,50), min.dist = seq(0.1,0.9, by = 0.2), similarity_percent = 0.5, visualization = FALSE, use_method = "umap", perplexity = c(seq(from=20,to=410,by=30),seq(from=450,to=800,by=50)), perplexity_score = 30, optimize_neib = TRUE ,optimize_min = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{pbmc}{
+  \item{input_data}{
 a Seurat object or a count matrix with rows as the genes
 }
   \item{num_pc}{

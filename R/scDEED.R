@@ -155,42 +155,42 @@ Cell.Classify.UMAP = function(rho_UMAP,rho_UMAP_permuted){
     return(ClassifiedCells_UMAP.results)
 }
 
-chooseK = function(pbmc){
-  if(class(pbmc) != "Seurat"){
-    dupli <- duplicated(colnames(pbmc))
+chooseK = function(input_data){
+  if(class(input_data) != "Seurat"){
+    dupli <- duplicated(colnames(input_data))
     if(length(which(dupli == TRUE)) != 0){
-      pbmc <- pbmc[, !dupli]
+      input_data <- input_data[, !dupli]
     }
-    negative <- which(as.matrix(pbmc < 0), arr.ind = T)[, 2]
+    negative <- which(as.matrix(input_data < 0), arr.ind = T)[, 2]
     if(length(negative) != 0){
       warning("There are negative values in the count matrix, and we have removed the corresponding cells and processd.")
-      pbmc <- pbmc[, -negative]
+      input_data <- input_data[, -negative]
     }
     
-    zero_row <- which(Matrix::rowSums(pbmc) == 0)
-    zero_col <- which(Matrix::colSums(pbmc) == 0)
+    zero_row <- which(Matrix::rowSums(input_data) == 0)
+    zero_col <- which(Matrix::colSums(input_data) == 0)
     
     
     
     if(length(which(zero_row == TRUE)) != 0){
       warning("There are rows containing all zeros, and we have removed them correspondingly and proceed.")
-      pbmc <- pbmc[-zero_row, ]
+      input_data <- input_data[-zero_row, ]
     }
     if(length(which(zero_col == TRUE)) != 0){
       warning("There are columns containing all zeros, and we have removed them correspondingly and proceed.")
-      pbmc <- pbmc[, -zero_col]
+      input_data <- input_data[, -zero_col]
     }
-    pbmc = suppressWarnings({Seurat::CreateSeuratObject(counts = pbmc)})
+    input_data = suppressWarnings({Seurat::CreateSeuratObject(counts = input_data)})
   }
-  pbmc <- Seurat::FindVariableFeatures(pbmc)
-  pbmc <- Seurat::ScaleData(pbmc)
-  pbmc <- Seurat::RunPCA(pbmc, features = Seurat::VariableFeatures(object = pbmc))
-  print(Seurat::ElbowPlot(pbmc))
+  input_data <- Seurat::FindVariableFeatures(input_data)
+  input_data <- Seurat::ScaleData(input_data)
+  input_data <- Seurat::RunPCA(input_data, features = Seurat::VariableFeatures(object = input_data))
+  print(Seurat::ElbowPlot(input_data))
 }
 
 # helper function to run ChoosenNeighbors, Cell.Similarity.UMAP, and Cell.Classify.UMAP in umap_tsne_process
-umap_optimize = function(pbmc,pbmc.permuted, reduction.method, K, n, m, results.PCA, similarity_percent){
-  results<-ChoosenNeighbors(pbmc = pbmc ,pbmc.permuted = pbmc.permuted, reduction.method = reduction.method, K = K, n = n, m = m)
+umap_optimize = function(input_data,input_data.permuted, reduction.method, K, n, m, results.PCA, similarity_percent){
+  results<-ChoosenNeighbors(input_data = input_data ,input_data.permuted = input_data.permuted, reduction.method = reduction.method, K = K, n = n, m = m)
   
   similarity_score_UMAP <-Cell.Similarity.UMAP(results.PCA$PCA_distances,results.PCA$PCA_distances_permuted,results$UMAP_distances,results$UMAP_distances_permuted, similarity_percent)
 
@@ -199,114 +199,114 @@ umap_optimize = function(pbmc,pbmc.permuted, reduction.method, K, n, m, results.
   return(length(ClassifiedCells_UMAP$UMAP_badindex))
 }
 
-tsne_optimize = function(pbmc, pbmc.permuted, num_pc, perplexity, results.PCA, similarity_percent){
-  results<-ChoosePerplexity(pbmc,pbmc.permuted, num_pc, perplexity)
+tsne_optimize = function(input_data, input_data.permuted, num_pc, perplexity, results.PCA, similarity_percent){
+  results<-ChoosePerplexity(input_data,input_data.permuted, num_pc, perplexity)
     similarity_score_tSNE <-Cell.Similarity.tSNE(results.PCA$PCA_distances,results.PCA$PCA_distances_permuted,results$tSNE_distances,results$tSNE_distances_permuted, similarity_percent)
     ClassifiedCells_tSNE<-Cell.Classify.tSNE(similarity_score_tSNE$rho_tSNE,similarity_score_tSNE$rho_tSNE_permuted)
    return(length(ClassifiedCells_tSNE$tSNE_badindex))
 }
 
-umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1),35,40,45,50), min.dist = seq(0.1,0.9, by = 0.2), similarity_percent = 0.5, visualization = FALSE, use_method = "umap",
+scDEED = function(input_data, num_pc, n_neighbors = c(seq(from=5,to=30,by=1),35,40,45,50), min.dist = seq(0.1,0.9, by = 0.2), similarity_percent = 0.5, visualization = FALSE, use_method = "umap",
                              perplexity = c(seq(from=20,to=410,by=30),seq(from=450,to=800,by=50)), perplexity_score = 30, optimize_neib = TRUE ,optimize_min = TRUE){
   # check if user just want to see the demo output 
   
   data(input_counts)
-  demo_tsne <- (identical(pbmc,input_counts) && perplexity == c(seq(from=20,to=410,by=30),seq(from=450,to=800,by=50)))
-  demo_umap_mn <- (identical(pbmc,input_counts) && n_neighbors == c(seq(from=5,to=30,by=1),35,40,45,50) && min.dist == seq(0.1,0.9, by = 0.2))
-  demo_umap_n <- (identical(pbmc,input_counts) && n_neighbors == c(seq(from=5,to=30,by=1),35,40,45,50))
-  demo_umap_m <- (identical(pbmc,input_counts) && min.dist == seq(0.1,0.9, by = 0.2))
+  demo_tsne <- (identical(input_data,input_counts) && perplexity == c(seq(from=20,to=410,by=30),seq(from=450,to=800,by=50)))
+  demo_umap_mn <- (identical(input_data,input_counts) && n_neighbors == c(seq(from=5,to=30,by=1),35,40,45,50) && min.dist == seq(0.1,0.9, by = 0.2))
+  demo_umap_n <- (identical(input_data,input_counts) && n_neighbors == c(seq(from=5,to=30,by=1),35,40,45,50))
+  demo_umap_m <- (identical(input_data,input_counts) && min.dist == seq(0.1,0.9, by = 0.2))
   
-  if(class(pbmc) != "Seurat"){
-    dupli <- duplicated(colnames(pbmc))
+  if(class(input_data) != "Seurat"){
+    dupli <- duplicated(colnames(input_data))
     if(length(which(dupli == TRUE)) != 0){
-      pbmc <- pbmc[, !dupli]
+      input_data <- input_data[, !dupli]
     }
-    negative <- which(as.matrix(pbmc < 0), arr.ind = T)[, 2]
+    negative <- which(as.matrix(input_data < 0), arr.ind = T)[, 2]
     if(length(negative) != 0){
       warning("There are negative values in the count matrix, and we have removed the corresponding cells and processd.")
-      pbmc <- pbmc[, -negative]
+      input_data <- input_data[, -negative]
     }
     
-    zero_row <- which(Matrix::rowSums(pbmc) == 0)
-    zero_col <- which(Matrix::colSums(pbmc) == 0)
+    zero_row <- which(Matrix::rowSums(input_data) == 0)
+    zero_col <- which(Matrix::colSums(input_data) == 0)
     
      
     
     if(length(which(zero_row == TRUE)) != 0){
       warning("There are rows containing all zeros, and we have removed them correspondingly and proceed.")
-      pbmc <- pbmc[-zero_row, ]
+      input_data <- input_data[-zero_row, ]
     }
     if(length(which(zero_col == TRUE)) != 0){
       warning("There are columns containing all zeros, and we have removed them correspondingly and proceed.")
-      pbmc <- pbmc[, -zero_col]
+      input_data <- input_data[, -zero_col]
     }
     
-  suppressWarnings({pbmc = Seurat::CreateSeuratObject(counts = pbmc)})
+  suppressWarnings({input_data = Seurat::CreateSeuratObject(counts = input_data)})
   }
   
   
   
-  pbmc[["percent.mt"]] <- Seurat::PercentageFeatureSet(pbmc, pattern = "^MT-")
-  pbmc <- subset(pbmc, subset = nFeature_RNA > 200 & nFeature_RNA < 2500 & percent.mt < 5)
-  pbmc <- Seurat::NormalizeData(pbmc, normalization.method = "LogNormalize", scale.factor = 10000)
-  pbmc <- Seurat::NormalizeData(pbmc)
+  input_data[["percent.mt"]] <- Seurat::PercentageFeatureSet(input_data, pattern = "^MT-")
+  input_data <- subset(input_data, subset = nFeature_RNA > 200 & nFeature_RNA < 2500 & percent.mt < 5)
+  input_data <- Seurat::NormalizeData(input_data, normalization.method = "LogNormalize", scale.factor = 10000)
+  input_data <- Seurat::NormalizeData(input_data)
   
-  pbmc <- Seurat::FindVariableFeatures(pbmc)
+  input_data <- Seurat::FindVariableFeatures(input_data)
 
-  pbmc <- Seurat::ScaleData(pbmc)
+  input_data <- Seurat::ScaleData(input_data)
 
-  pbmc <- Seurat::RunPCA(pbmc, features = Seurat::VariableFeatures(object = pbmc))
-  nsamples <- ncol(pbmc)
+  input_data <- Seurat::RunPCA(input_data, features = Seurat::VariableFeatures(object = input_data))
+  nsamples <- ncol(input_data)
   
   # subsampling process
-  if(nrow(pbmc[[]]) > 30000){
-    full_cell <- Seurat::Cells(pbmc)
-    if(length(levels(pbmc)) <= 1){
+  if(nrow(input_data[[]]) > 30000){
+    full_cell <- Seurat::Cells(input_data)
+    if(length(levels(input_data)) <= 1){
       # no cell types 
       sub_cells <- sample(full_cell, 30000, replace = FALSE)
-      pbmc <- subset(pbmc, cells = sub_cells)
+      input_data <- subset(input_data, cells = sub_cells)
     }
     else{
       # with cell types
-      cellTypes <- levels(pbmc)
+      cellTypes <- levels(input_data)
       preserved_cells_num <- (100/length(cellTypes))*0.01*length(full_cell)
       # sampling for each cell type
       
       # start with the first cell type
-      pbmc <- subset(pbmc, idents = cellTypes[1])
-      fir_cells <- Seurat::Cells(fir_pbmc)
+      input_data <- subset(input_data, idents = cellTypes[1])
+      fir_cells <- Seurat::Cells(fir_input_data)
       if(length(fir_cells) > preserved_cells_num){
         sub_cells <- sample(fir_cells, preserved_cells_num, replace = FALSE)
-        pbmc <- subset(pbmc, cells = sub_cells)
+        input_data <- subset(input_data, cells = sub_cells)
       }
       for (i in cellTypes[-1]) {
-        next_pbmc <- subset(pbmc, idents = i)
-        next_cells <- Seurat::Cells(next_pbmc)
+        next_input_data <- subset(input_data, idents = i)
+        next_cells <- Seurat::Cells(next_input_data)
         if(length(next_cells) > preserved_cells_num){
           sub_cells <- sample(next_cells, preserved_cells_num, replace = FALSE)
-          next_pbmc <- subset(next_pbmc, cells = sub_cells)
+          next_input_data <- subset(next_input_data, cells = sub_cells)
         }
-        pbmc <- merge(pbmc, next_pbmc)
+        input_data <- merge(input_data, next_input_data)
       }
     }
-    # add the features and pca to pbmc
-    pbmc <- Seurat::FindVariableFeatures(pbmc)
+    # add the features and pca to input_data
+    input_data <- Seurat::FindVariableFeatures(input_data)
     
-    pbmc <- Seurat::ScaleData(pbmc)
+    input_data <- Seurat::ScaleData(input_data)
     
-    pbmc <- Seurat::RunPCA(pbmc, features = Seurat::VariableFeatures(object = pbmc))
+    input_data <- Seurat::RunPCA(input_data, features = Seurat::VariableFeatures(object = input_data))
   }
   
   if(use_method == "umap"){
     
    
-    if (is.null(pbmc@reductions$umap)){
-      pbmc <- Seurat::RunUMAP(pbmc, dims = 1:num_pc)
+    if (is.null(input_data@reductions$umap)){
+      input_data <- Seurat::RunUMAP(input_data, dims = 1:num_pc)
     }
-    pbmc.permuted<-Permuted(pbmc)
-    pbmc.permuted<-Seurat::RunPCA(pbmc.permuted, npcs= num_pc, features = Seurat::VariableFeatures(object = pbmc.permuted))
+    input_data.permuted<-Permuted(input_data)
+    input_data.permuted<-Seurat::RunPCA(input_data.permuted, npcs= num_pc, features = Seurat::VariableFeatures(object = input_data.permuted))
 
-    results.PCA <- Distances.PCA.UMAP.big(pbmc, pbmc.permuted, K=num_pc)
+    results.PCA <- Distances.PCA.UMAP.big(input_data, input_data.permuted, K=num_pc)
 
     
     # set up the default parameters for runumap
@@ -328,7 +328,7 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
       else{
         all_pairs <- expand.grid(n_neighbors, min.dist)
         
-        all_dub <-foreach::`%do%`(foreach::foreach(n = all_pairs$Var1, m = all_pairs$Var2, .combine = "c"), umap_optimize(pbmc = pbmc, pbmc.permuted = pbmc.permuted,
+        all_dub <-foreach::`%do%`(foreach::foreach(n = all_pairs$Var1, m = all_pairs$Var2, .combine = "c"), umap_optimize(input_data = input_data, input_data.permuted = input_data.permuted,
                                                                                                                           reduction.method = "pca", K = num_pc,
                                                                                                                           n = n, m = m, results.PCA = results.PCA, similarity_percent = similarity_percent) 
         )
@@ -360,7 +360,7 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
         dubious_number_UMAP_neib <- umap_n_table$`number of dubious cells`
       }
       else{
-        dubious_number_UMAP_neib <-foreach::`%do%`(foreach::foreach(n = n_neighbors, .combine = "c"), umap_optimize(pbmc = pbmc, pbmc.permuted = pbmc.permuted,
+        dubious_number_UMAP_neib <-foreach::`%do%`(foreach::foreach(n = n_neighbors, .combine = "c"), umap_optimize(input_data = input_data, input_data.permuted = input_data.permuted,
                                                                                                                     reduction.method = "pca", K = num_pc,
                                                                                                                     n = n, m = default_min, results.PCA = results.PCA, similarity_percent = similarity_percent) 
         )
@@ -387,7 +387,7 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
         dubious_number_UMAP_min <- umap_m_table$`number of dubious cells`
       }
       else{
-        dubious_number_UMAP_min <- foreach::`%do%`(foreach::foreach(m = min.dist, .combine = "c"), umap_optimize(pbmc = pbmc, pbmc.permuted = pbmc.permuted,
+        dubious_number_UMAP_min <- foreach::`%do%`(foreach::foreach(m = min.dist, .combine = "c"), umap_optimize(input_data = input_data, input_data.permuted = input_data.permuted,
                                                                                                                  reduction.method = "pca", K = num_pc,
                                                                                                                  n = default_neib, m = m, results.PCA = results.PCA, similarity_percent = similarity_percent) 
         )
@@ -406,7 +406,7 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
     
     
   
-    res <- ChoosenNeighbors(pbmc, pbmc.permuted, "pca", num_pc, n = final_neib, m = final_min)
+    res <- ChoosenNeighbors(input_data, input_data.permuted, "pca", num_pc, n = final_neib, m = final_min)
     similarity_score_UMAP <-Cell.Similarity.UMAP(results.PCA$PCA_distances,results.PCA$PCA_distances_permuted,res$UMAP_distances,res$UMAP_distances_permuted, similarity_percent)
     
     ClassifiedCells_UMAP<-Cell.Classify.UMAP(similarity_score_UMAP$rho_UMAP,similarity_score_UMAP$rho_UMAP_permuted)
@@ -421,7 +421,7 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
 
       if(optimize_neib == TRUE && optimize_min == FALSE){
         highlight_neib <- subset(dub_neighbor, n.neighbors == best_para_neib)
-        pbmc_dubious_plot_neib <- ggplot2::ggplot(data=dub_neighbor, ggplot2::aes(x=n.neighbors, y=`number of dubious cells`, group=1))+
+        input_data_dubious_plot_neib <- ggplot2::ggplot(data=dub_neighbor, ggplot2::aes(x=n.neighbors, y=`number of dubious cells`, group=1))+
           ggplot2::geom_point(size = 5)+
           ggplot2::geom_point(data=highlight_neib, ggplot2::aes(x=n.neighbors, y=`number of dubious cells`), color='cyan',size = 5) +
           ggplot2::geom_vline(xintercept=highlight_neib$n.neighbors, linetype="dotted") +
@@ -429,7 +429,7 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
           ggplot2::labs(x = "n.neighbors", y = "# of dubious cell embeddings") + ggplot2::theme_bw() +
           ggplot2::theme(text=ggplot2::element_text(size=20),panel.border = ggplot2::element_blank(), panel.grid.major = ggplot2::element_blank(),
                          panel.grid.minor = ggplot2::element_blank(),axis.text=ggplot2::element_text(size=20), axis.line = ggplot2::element_line(colour = "black"))
-        output <-list(dub_neighbor, best_para_neib, cell_list[ClassifiedCells_UMAP$UMAP_badindex], cell_list[ClassifiedCells_UMAP$UMAP_goodindex], bad_graph, trust_graph, pbmc_dubious_plot_neib)
+        output <-list(dub_neighbor, best_para_neib, cell_list[ClassifiedCells_UMAP$UMAP_badindex], cell_list[ClassifiedCells_UMAP$UMAP_goodindex], bad_graph, trust_graph, input_data_dubious_plot_neib)
         
         names(output) <- c("number of dubious cells corresponding to n.neighbors list", "best n.neighbors", 
                            "list of dubious cells corresponding to best n.neighbors",
@@ -439,7 +439,7 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
       }
        else if(optimize_neib == FALSE && optimize_min == TRUE){
         highlight_min <- subset(dub_min_dist, min.dist == best_para_min)
-        pbmc_dubious_plot_min <- ggplot2::ggplot(data=dub_min_dist, ggplot2::aes(x=min.dist, y=`number of dubious cells`, group=1))+
+        input_data_dubious_plot_min <- ggplot2::ggplot(data=dub_min_dist, ggplot2::aes(x=min.dist, y=`number of dubious cells`, group=1))+
           ggplot2::geom_point(size = 5)+
           ggplot2::geom_point(data=highlight_min, ggplot2::aes(x=min.dist, y=`number of dubious cells`), color='cyan',size = 5) +
           ggplot2::geom_vline(xintercept=highlight_min$min.dist, linetype="dotted") +
@@ -447,7 +447,7 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
           ggplot2::labs(x = "min.dist", y = "# of dubious cell embeddings") + ggplot2::theme_bw() +
           ggplot2::theme(text=ggplot2::element_text(size=20),panel.border = ggplot2::element_blank(), panel.grid.major = ggplot2::element_blank(),
                          panel.grid.minor = ggplot2::element_blank(),axis.text=ggplot2::element_text(size=20), axis.line = ggplot2::element_line(colour = "black"))
-        output <-list(dub_min_dist, best_para_min, cell_list[ClassifiedCells_UMAP$UMAP_badindex], cell_list[ClassifiedCells_UMAP$UMAP_goodindex], bad_graph, trust_graph, pbmc_dubious_plot_min)
+        output <-list(dub_min_dist, best_para_min, cell_list[ClassifiedCells_UMAP$UMAP_badindex], cell_list[ClassifiedCells_UMAP$UMAP_goodindex], bad_graph, trust_graph, input_data_dubious_plot_min)
         
         names(output) <- c("number of dubious cells corresponding to min.dist list", "best min.dist", 
                            "list of dubious cells corresponding to best min.dist",
@@ -457,7 +457,7 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
       }
       else if(optimize_neib == TRUE && optimize_min == TRUE){
         highlight <- subset(dub_para, n.neighbors == best_para[1, 1] & min.dist == best_para[1, 2])
-        pbmc_dubious_plot <- ggplot2::ggplot(data = dub_para, ggplot2::aes(x = factor(n.neighbors), y = factor(min.dist), fill = `number of dubious cells`))  + ggplot2::geom_tile() +
+        input_data_dubious_plot <- ggplot2::ggplot(data = dub_para, ggplot2::aes(x = factor(n.neighbors), y = factor(min.dist), fill = `number of dubious cells`))  + ggplot2::geom_tile() +
 
           ggplot2::scale_fill_gradient(low="blue", high="red") +
           ggplot2::geom_vline(xintercept = factor(highlight$n.neighbors)) + ggplot2::annotate(geom = "text", x = factor(highlight$n.neighbors), y = factor(max(dub_para[, 2])), label = "optimized",color='cyan',size =4, vjust = "inward", hjust = "inward") +
@@ -469,7 +469,7 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
         output <-list(dub_para, best_para, 
                       cell_list[ClassifiedCells_UMAP$UMAP_badindex], cell_list[ClassifiedCells_UMAP$UMAP_goodindex], 
                       bad_graph, trust_graph, 
-          pbmc_dubious_plot)
+          input_data_dubious_plot)
         
         names(output) <- c("number of dubious cells corresponding to pair of n.neighbors and min.dist list", "best pair of n.neighbors and min.dist",
                            "list of dubious cells corresponding to best pair of n.neighbors and min.dist",
@@ -525,14 +525,14 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
       stop("sample size too small")
     }
     
-    if(is.null(pbmc@reductions$tsne)){
-      pbmc <- Seurat::RunTSNE(pbmc)
+    if(is.null(input_data@reductions$tsne)){
+      input_data <- Seurat::RunTSNE(input_data)
     }
 
-    pbmc.permuted <- Permuted(pbmc)
-    results.PCA <- Distances.PCA.big(pbmc, pbmc.permuted, K = num_pc, perplexity_score = perplexity_score)
+    input_data.permuted <- Permuted(input_data)
+    results.PCA <- Distances.PCA.big(input_data, input_data.permuted, K = num_pc, perplexity_score = perplexity_score)
 
-    pbmc.permuted<-Seurat::RunPCA(pbmc.permuted, npcs= num_pc,features = Seurat::VariableFeatures(object = pbmc.permuted))
+    input_data.permuted<-Seurat::RunPCA(input_data.permuted, npcs= num_pc,features = Seurat::VariableFeatures(object = input_data.permuted))
     perplexity <- sort(perplexity)
     perplexity <- perplexity[perplexity <= floor((nsamples -1)/3)]
     
@@ -545,7 +545,7 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
       dubious_number_tSNE <- tsne_table$`number of dubious cells`
     }
     else{
-      dubious_number_tSNE <-foreach::`%do%`(foreach::foreach(p = perplexity, .combine = "c"), tsne_optimize(pbmc, pbmc.permuted, num_pc, perplexity = p, results.PCA, similarity_percent) 
+      dubious_number_tSNE <-foreach::`%do%`(foreach::foreach(p = perplexity, .combine = "c"), tsne_optimize(input_data, input_data.permuted, num_pc, perplexity = p, results.PCA, similarity_percent) 
       )
     }
     
@@ -555,7 +555,7 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
     }
     dub_perplex <- data.frame("perplexity" = perplexity, "number of dubious cells" = dubious_number_tSNE)
     colnames(dub_perplex) <- c("perplexity", "number of dubious cells")
-    res <- ChoosePerplexity(pbmc,pbmc.permuted, num_pc, best_para)
+    res <- ChoosePerplexity(input_data,input_data.permuted, num_pc, best_para)
     similarity_score_tSNE <-Cell.Similarity.tSNE(results.PCA$PCA_distances,results.PCA$PCA_distances_permuted,res$tSNE_distances,res$tSNE_distances_permuted,similarity_percent)
     
     ClassifiedCells_tSNE<-Cell.Classify.tSNE(similarity_score_tSNE$rho_tSNE,similarity_score_tSNE$rho_tSNE_permuted)
@@ -567,9 +567,9 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
       trust_graph <- Seurat::DimPlot(res$object, reduction = "tsne", cells.highlight = list(`Trustworthy cells`= ClassifiedCells_tSNE$tSNE_goodindex), cols.highlight = "blue") 
       levels(trust_graph$data$highlight)[match("Unselected",levels(trust_graph$data$highlight))] <- "Other Cells"
       
-      # pbmc_dubious <- data.frame(perplexity, dubious_number_tSNE)
+      # input_data_dubious <- data.frame(perplexity, dubious_number_tSNE)
       highlight <- subset(dub_perplex, perplexity == best_para)
-      pbmc_dubious_plot <- ggplot2::ggplot(data=dub_perplex, ggplot2::aes(x=perplexity, y=`number of dubious cells`, group=1))+
+      input_data_dubious_plot <- ggplot2::ggplot(data=dub_perplex, ggplot2::aes(x=perplexity, y=`number of dubious cells`, group=1))+
         ggplot2::geom_point(size = 5)+
         ggplot2::geom_point(data=highlight, ggplot2::aes(x=perplexity, y=`number of dubious cells`), color='cyan',size = 5) +
         ggplot2::geom_vline(xintercept=highlight$perplexity, linetype="dotted") +
@@ -578,7 +578,7 @@ umap_tsne_process = function(pbmc, num_pc, n_neighbors = c(seq(from=5,to=30,by=1
         ggplot2::theme(text=ggplot2::element_text(size=20),panel.border = ggplot2::element_blank(), panel.grid.major = ggplot2::element_blank(),
                        panel.grid.minor = ggplot2::element_blank(),axis.text=ggplot2::element_text(size=20), axis.line = ggplot2::element_line(colour = "black"))
       
-      output <-list(dub_perplex, best_para, cell_list[ClassifiedCells_tSNE$tSNE_badindex], cell_list[ClassifiedCells_tSNE$tSNE_goodindex],bad_graph, trust_graph, pbmc_dubious_plot)
+      output <-list(dub_perplex, best_para, cell_list[ClassifiedCells_tSNE$tSNE_badindex], cell_list[ClassifiedCells_tSNE$tSNE_goodindex],bad_graph, trust_graph, input_data_dubious_plot)
       names(output) <- c("number of dubious cells corresponding to perplexity list", "best perplexity", 
                          "list of dubious cell corresponding to best perplexity",
                          "list of trustworthy cell corresponding to best perplexity",
