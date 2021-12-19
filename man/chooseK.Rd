@@ -4,11 +4,11 @@
 Choose the number of PC based on an elbow plot
 }
 \usage{
-chooseK(pbmc)
+chooseK(input_data)
 }
 
 \arguments{
-  \item{pbmc}{a Seurat object or a count matrix with rows as the genes}
+  \item{input_data}{a Seurat object or a count matrix with rows as the genes}
 }
 \value{
 an elbow plot for users to choose suitable dimensionality, in terms of numbers of Principal Components (num_pc), as the input of umap_tsne_process.

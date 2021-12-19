@@ -1,3 +1,6 @@
+# setup global variables 
+input_counts <- nFeature_RNA <- fir_input_data <- umap_nm_table <- n <- m <- umap_n_table <- umap_m_table <- n.neighbors <- `number of dubious cells` <- tsne_table <- percent.mt <- p <- i <- NULL
+
 # Permutation for input as Seurat object
 Permuted = function (pbmc)
 {
@@ -95,7 +98,7 @@ ChoosenNeighbors<- function(pbmc,pbmc.permuted, reduction.method, K, n, m){
   return(results)
 }
 
-globalVariables("i")
+ 
 
 Cell.Similarity.UMAP = function(Euc_distances,Euc_distances_permuted,UMAP_distances,UMAP_distances_permuted,percent)
     {
@@ -190,7 +193,7 @@ chooseK = function(input_data){
 
 # helper function to run ChoosenNeighbors, Cell.Similarity.UMAP, and Cell.Classify.UMAP in umap_tsne_process
 umap_optimize = function(input_data,input_data.permuted, reduction.method, K, n, m, results.PCA, similarity_percent){
-  results<-ChoosenNeighbors(input_data = input_data ,input_data.permuted = input_data.permuted, reduction.method = reduction.method, K = K, n = n, m = m)
+  results<-ChoosenNeighbors(pbmc = input_data ,pbmc.permuted = input_data.permuted, reduction.method = reduction.method, K = K, n = n, m = m)
   
   similarity_score_UMAP <-Cell.Similarity.UMAP(results.PCA$PCA_distances,results.PCA$PCA_distances_permuted,results$UMAP_distances,results$UMAP_distances_permuted, similarity_percent)
 
@@ -210,7 +213,7 @@ scDEED = function(input_data, num_pc, n_neighbors = c(seq(from=5,to=30,by=1),35,
                              perplexity = c(seq(from=20,to=410,by=30),seq(from=450,to=800,by=50)), perplexity_score = 30, optimize_neib = TRUE ,optimize_min = TRUE){
   # check if user just want to see the demo output 
   
-  data(input_counts)
+
   demo_tsne <- (identical(input_data,input_counts) && perplexity == c(seq(from=20,to=410,by=30),seq(from=450,to=800,by=50)))
   demo_umap_mn <- (identical(input_data,input_counts) && n_neighbors == c(seq(from=5,to=30,by=1),35,40,45,50) && min.dist == seq(0.1,0.9, by = 0.2))
   demo_umap_n <- (identical(input_data,input_counts) && n_neighbors == c(seq(from=5,to=30,by=1),35,40,45,50))
@@ -320,7 +323,7 @@ scDEED = function(input_data, num_pc, n_neighbors = c(seq(from=5,to=30,by=1),35,
     if(optimize_neib == TRUE && optimize_min == TRUE){
       # quick output umap sample result if user input the sample data
       if(demo_umap_mn){
-        data(umap_nm_table)
+
         dubious_number_UMAP <- umap_nm_table
         dub_para <- umap_nm_table
         all_dub <- umap_nm_table$`number of dubious cells`
@@ -356,7 +359,7 @@ scDEED = function(input_data, num_pc, n_neighbors = c(seq(from=5,to=30,by=1),35,
       
       # quick result
       if(demo_umap_n){
-        data(umap_n_table)
+    
         dubious_number_UMAP_neib <- umap_n_table$`number of dubious cells`
       }
       else{
@@ -383,7 +386,7 @@ scDEED = function(input_data, num_pc, n_neighbors = c(seq(from=5,to=30,by=1),35,
     
       # quick result
       if(demo_umap_m){
-        data(umap_m_table)
+   
         dubious_number_UMAP_min <- umap_m_table$`number of dubious cells`
       }
       else{
@@ -541,7 +544,7 @@ scDEED = function(input_data, num_pc, n_neighbors = c(seq(from=5,to=30,by=1),35,
 
     
     if(demo_tsne){
-      data(tsne_table)
+
       dubious_number_tSNE <- tsne_table$`number of dubious cells`
     }
     else{
