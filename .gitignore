@@ -4,3 +4,4 @@
 *.Rbuildignore
 *.Rmd
 *.rds
+.Rproj.user

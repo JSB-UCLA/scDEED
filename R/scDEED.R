@@ -5,15 +5,29 @@ input_counts <- nFeature_RNA <- fir_input_data <- umap_nm_table <- n <- m <- uma
 Permuted = function (pbmc)
 {
     pbmc.permuted = pbmc
-    X=pbmc@assays$RNA@scale.data
-    X_permuted = pbmc.permuted@assays$RNA@scale.data
+    if(DefaultAssay(pbmc) == 'RNA'){
+      X=pbmc@assays$RNA@scale.data
+      X_permuted = pbmc.permuted@assays$RNA@scale.data
+    }
+    else if(DefaultAssay(pbmc) == 'integrated'){
+      X=pbmc@assays$integrated@scale.data
+      X_permuted = pbmc.permuted@assays$integrated@scale.data
+    }
+    
     set.seed(1000)
 for (i in 1:dim(X)[1])
 {
     row = pracma::randperm(dim(X)[2])
     X_permuted[i,]=X[i,row]
 }
-pbmc.permuted@assays$RNA@scale.data = X_permuted
+    if(DefaultAssay(pbmc) == 'RNA'){
+      pbmc.permuted@assays$RNA@scale.data = X_permuted
+    }
+    else if(DefaultAssay(pbmc) == 'integrated'){
+      pbmc.permuted@assays$integrated@scale.data = X_permuted
+    }
+    
+
 
     return(pbmc.permuted)
 }
