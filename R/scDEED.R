@@ -1,5 +1,6 @@
 # setup global variables 
-input_counts <- nFeature_RNA <- fir_input_data <- umap_nm_table <- n <- m <- umap_n_table <- umap_m_table <- n.neighbors <- `number of dubious cells` <- tsne_table <- percent.mt <- p <- i <- NULL
+# input_counts <- nFeature_RNA <- fir_input_data <- umap_nm_table <- n <- m <- umap_n_table <- umap_m_table <- n.neighbors <- `number of dubious cells` <- tsne_table <- percent.mt <- p <- i <- NULL
+
 
 # Permutation for input as Seurat object
 Permuted = function (pbmc)
@@ -226,13 +227,17 @@ tsne_optimize = function(input_data, input_data.permuted, num_pc, perplexity, re
 scDEED = function(input_data, num_pc, n_neighbors = c(seq(from=5,to=30,by=1),35,40,45,50), min.dist = seq(0.1,0.9, by = 0.2), similarity_percent = 0.5, visualization = FALSE, use_method = "umap",
                              perplexity = c(seq(from=20,to=410,by=30),seq(from=450,to=800,by=50)), perplexity_score = 30, optimize_neib = TRUE ,optimize_min = TRUE){
   # check if user just want to see the demo output 
-  
+  data("input_counts")
+  data("tsne_table")
+  data("umap_m_table")
+  data("umap_n_table")
+  data("umap_nm_table")
 
   demo_tsne <- (identical(input_data,input_counts) && perplexity == c(seq(from=20,to=410,by=30),seq(from=450,to=800,by=50)))
   demo_umap_mn <- (identical(input_data,input_counts) && n_neighbors == c(seq(from=5,to=30,by=1),35,40,45,50) && min.dist == seq(0.1,0.9, by = 0.2))
   demo_umap_n <- (identical(input_data,input_counts) && n_neighbors == c(seq(from=5,to=30,by=1),35,40,45,50))
   demo_umap_m <- (identical(input_data,input_counts) && min.dist == seq(0.1,0.9, by = 0.2))
-  
+
   if(class(input_data) != "Seurat"){
     dupli <- duplicated(colnames(input_data))
     if(length(which(dupli == TRUE)) != 0){
@@ -476,7 +481,8 @@ scDEED = function(input_data, num_pc, n_neighbors = c(seq(from=5,to=30,by=1),35,
         highlight <- subset(dub_para, n.neighbors == best_para[1, 1] & min.dist == best_para[1, 2])
         input_data_dubious_plot <- ggplot2::ggplot(data = dub_para, ggplot2::aes(x = factor(n.neighbors), y = factor(min.dist), fill = `number of dubious cells`))  + ggplot2::geom_tile() +
 
-          ggplot2::scale_fill_gradient(low="blue", high="red") +
+          ggplot2::scale_fill_gradient(low="blue", high="red") + #, breaks=c(min(dub_para$`number of dubious cells`), max(dub_para$`number of dubious cells`)),labels=c(min(dub_para$`number of dubious cells`) ,max(dub_para$`number of dubious cells`)), limits=c(min(dub_para$`number of dubious cells`),max(dub_para$`number of dubious cells`))) +
+          
           ggplot2::geom_vline(xintercept = factor(highlight$n.neighbors)) + ggplot2::annotate(geom = "text", x = factor(highlight$n.neighbors), y = factor(max(dub_para[, 2])), label = "optimized",color='cyan',size =4, vjust = "inward", hjust = "inward") +
           ggplot2::geom_hline(yintercept = factor(highlight$min.dist)) + ggplot2::annotate(geom = "text", x = factor(max(dub_para[, 1])), y = factor(highlight$min.dist), label = "optimized",color='cyan',size =4, vjust = "inward", hjust = "inward") +
           ggplot2::labs(x = "n.neighbors", y = "min.dist") + ggplot2::theme_bw() +
