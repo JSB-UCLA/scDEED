@@ -6,11 +6,11 @@
 Permuted = function (pbmc)
 {
     pbmc.permuted = pbmc
-    if(DefaultAssay(pbmc) == 'RNA'){
+    if(Seurat::DefaultAssay(pbmc) == 'RNA'){
       X=pbmc@assays$RNA@scale.data
       X_permuted = pbmc.permuted@assays$RNA@scale.data
     }
-    else if(DefaultAssay(pbmc) == 'integrated'){
+    else if(Seurat::DefaultAssay(pbmc) == 'integrated'){
       X=pbmc@assays$integrated@scale.data
       X_permuted = pbmc.permuted@assays$integrated@scale.data
     }
@@ -21,10 +21,10 @@ for (i in 1:dim(X)[1])
     row = pracma::randperm(dim(X)[2])
     X_permuted[i,]=X[i,row]
 }
-    if(DefaultAssay(pbmc) == 'RNA'){
+    if(Seurat::DefaultAssay(pbmc) == 'RNA'){
       pbmc.permuted@assays$RNA@scale.data = X_permuted
     }
-    else if(DefaultAssay(pbmc) == 'integrated'){
+    else if(Seurat::DefaultAssay(pbmc) == 'integrated'){
       pbmc.permuted@assays$integrated@scale.data = X_permuted
     }
     
