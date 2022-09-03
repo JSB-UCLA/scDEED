@@ -42,7 +42,7 @@ umap_example <- scDEED(input_counts , num_pc = 16, use_method = "umap",visualiza
 ```
 
 ``` r
-head(umap_example$`UMAP plot with dubious cells - best pair of n.neighbors and min.dist`)
+head(umap_example$`number of dubious cells corresponding to pair of n.neighbors and min.dist list`)
 ```
 |   | n.neighbors | min.dist | number of dubious cells |
 |---|-------------|----------|-------------------------|
@@ -54,7 +54,7 @@ head(umap_example$`UMAP plot with dubious cells - best pair of n.neighbors and m
 | 6 | 10           | 0.1      | 43                       |
 
 ``` r
-umap_example$`best n.neighbors`
+umap_example$`best pair of n.neighbors and min.dist`
 ```
 5 0.5
 
@@ -80,7 +80,7 @@ Plot of number of dubious embeddings vs pair of n.neighbors and min.dist for UMA
 ### Example for tsne
 
 ``` r
-tsne_example <- umap_tsne_process(pbmc.data, num_pc = 10, use_method = "tsne",visualization = TRUE)
+tsne_example <- scDEED(input_counts, num_pc = 10, use_method = "tsne",visualization = TRUE)
 ```
 
 ``` r
