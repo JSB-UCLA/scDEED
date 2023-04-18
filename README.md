@@ -9,7 +9,7 @@
 - Input count matrix should contain cells as columns and genes as rows
 
 ## Installation
-You can install the released version of scDEED from GitHub with:
+You can install scDEED from GitHub using devtools. It should install in 1 minute, but may take longer if you need to update dependencies. 
 
 ``` r
 library(devtools)
