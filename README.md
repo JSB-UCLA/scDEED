@@ -1,4 +1,4 @@
-
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8371425.svg)](https://doi.org/10.5281/zenodo.8371425)
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # scDEED (single-cell dubious embeddings detector): a statistical method for detecting dubious non-linear embeddings
