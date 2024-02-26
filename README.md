@@ -15,6 +15,8 @@ The manuscript is available at: https://www.nature.com/articles/s41467-024-45891
 ## Installation
 You can install scDEED from GitHub using devtools. It should install in 1 minute, but may take longer if you need to update dependencies. 
 
+The current version of scDEED is compatible with Seurat V4 only. 
+
 ``` r
 library(devtools)
 devtools::install_github("JSB-UCLA/scDEED")
