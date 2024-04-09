@@ -59,10 +59,7 @@ Seurat::ElbowPlot(data)
 
 <img src="man/figures/ElbowPlot.png" width="100%" /> 
 
-Now we can use scDEED to optimize the hyperparameters for UMAP and t-SNE. scDEED will search the provided `perplexity` values (for t-SNE) or `min.dist` and `n_neighbors` values (for UMAP) and calculate the number of dubious cell embeddings at each value. The output is a data.frame with number of dubious cell embeddings found at each hyperparameter value. 
-
-If there is more than 1 hyperparameter setting to check, scDEED will provide an estimate for how long the code will take. It calculates this by timing how long 1 hyperparameter setting takes- so please be patient as it may take a few minutes. 
-
+Now we will introduce the scDEED function. 
 ### Inputs
 
 - `K`: the number of PCs to use. This must be specified by the user. 
@@ -76,18 +73,52 @@ Together, the dubious and trustworthy cutoffs determine the intermediate cells. 
 
 - `reduction.method`: the dimension reduction method to use. The package is set up for t-SNE and UMAP, but can be adapted to other dimension reduction methods (see section: Adapting to Other Dimension Reduction Methods)
   * For t-SNE: reduction.method = 'tsne'
-    - `perplexity`: The default perplexity values are: 20 to 410, increasing by 30 and 450 to 800, increasing by 50 
-  
+    - `perplexity`: The default perplexity values are: 20 to 410, increasing by 30 and 450 to 800, increasing by 50
   * For UMAP: reduction.method = 'umap'
     - `min.dist`: The default min.dist values are: 0.1 and 0.4
     - `n_neighbors`:The default n_neighbors values are: 5, 20, 30, 40, 50
-    - The grid search (due to two hyperparameters, rather than one) can be computationally expensive. Depending on the user's resources and time constraints, more hyperparameter options can be added by changing the min.dist or n_neighbors argument. 
+    - The grid search (due to two hyperparameters, rather than one) can be computationally expensive. Depending on the user's resources and time constraints, more hyperparameter options can be added by changing the `min.dist` or `n_neighbors` argument. 
 
 ### Outputs
 The scDEED function returns a list of 2 items: 
 - `num_dubious`: This is a data.frame that shows the hyperparameter settings and the number of dubious cells at those hyperparameter settings 
 
 - `full_results`: This is a data.frame that shows the hyperparamater settings as well as the dubious/trustworthy/intermediate cells. The cell classifications at each hyperparameter setting are available in the last 3 columns, separated by commas. 
+
+
+
+First, we will use the default Seurat settings and check for dubious cells. 
+``` r
+K = 8
+start = Sys.time()
+data = RunTSNE(data)
+result = scDEED(data, K = K, reduction.method = 'tsne', perplexity = 40, rerun = F)
+#the rerun argument saves a bit of time- it tells the function that we already have the embeddings and so we do not rerun RunTSNE. When optimizing hyperparameters, the rerun argument is T (default) because the function needs to rerun embeddings at each hyperparameter setting
+
+end = Sys.time()
+end-start
+#Time difference of 4.822411 mins
+
+dubious_cells = result$full_results$dubious_cells[result$full_results$perplexity=='40']
+dubious_cells = as.numeric(strsplit(dubious_cells, ',')[[1]])
+trustworthy_cells =  result$full_results$trustworthy_cells[result$full_results$perplexity=='40']
+trustworthy_cells = as.numeric(strsplit(trustworthy_cells, ',')[[1]])
+
+DimPlot(data, reduction = 'tsne', cells.highlight = list('dubious' = dubious_cells, 'trustworthy' = trustworthy_cells)) + scale_color_manual(values = c('gray', 'blue', 'red'))
+```
+<img src="man/figures/tsne_original.png" width="100%" />
+
+There are a lot of dubious cells. 
+We can also use this to estimate how long hyperparameter optimization will take. It took about 4.8 minutes for 1 setting; so checking _n_ hyperparameter settings will take approximately _n_*4.8 minutes. This should be an overestimate (this estimate accounts for the time needed to permute the data at each hyperparameter setting, but in reality we will only permute the data once). 
+
+To reduce computational time, users could downsample their dataset, reduce the number of hyperparameter settings, or increase the number of cores. 
+
+
+We will now use scDEED to optimize the hyperparameters for UMAP and t-SNE. scDEED will search the provided `perplexity` values (for t-SNE) or `min.dist` and `n_neighbors` values (for UMAP) and calculate the number of dubious cell embeddings at each value. The output is a data.frame with number of dubious cell embeddings found at each hyperparameter value. 
+
+If there is more than 1 hyperparameter setting to check, scDEED will provide an estimate for how long the code will take. It calculates this by timing how long 1 hyperparameter setting takes- so please be patient as it may take a few minutes. 
+
+
 
 ``` r
 K = 8
