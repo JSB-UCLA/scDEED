@@ -48,11 +48,13 @@ Distances.pre_embedding = function(pbmc, pbmc_permuted, K, pre_embedding = 'pca'
 
 # Find distances under PCA and tSNE for both original and permuted matrices.
 ##default perplexity to match seurat
-Distances.tSNE = function(pbmc,pbmc.permuted, K, perplexity_score = 40, pre_embedding = 'pca', check_duplicates = T)
+Distances.tSNE = function(pbmc,pbmc.permuted, K, perplexity_score = 40, pre_embedding = 'pca', check_duplicates = T, rerun = T)
 {
   
   distances<-distances::distances
+  if(rerun){
   pbmc = Seurat::RunTSNE(pbmc, seed.use=100, perplexity = perplexity_score, reduction = pre_embedding, do.fast = T, check_duplicates = check_duplicates)
+  }
   tSNE_distances = distances(pbmc@reductions$tsne@cell.embeddings)
 
   pbmc.permuted <- Seurat::RunTSNE(pbmc.permuted, seed.use=100, perplexity = perplexity_score, reduction = pre_embedding, do.fast = T, check_duplicates = check_duplicates)
@@ -66,11 +68,11 @@ Distances.tSNE = function(pbmc,pbmc.permuted, K, perplexity_score = 40, pre_embe
 # Find distances under PCA and UMAP for both original and permuted matrices.
 ##default setting same as Seurat
 
-Distances.UMAP = function(pbmc,pbmc.permuted, K, pre_embedding = 'pca', n = 30, m = 0.3) {
+Distances.UMAP = function(pbmc,pbmc.permuted, K, pre_embedding = 'pca', n = 30, m = 0.3, rerun = T) {
   distances <- distances::distances
-  
+  if(rerun){
     pbmc <- Seurat::RunUMAP(pbmc, dims = 1:K, seed.use = 100, reduction = pre_embedding, n.neighbors = n, min.dist = m)
-
+}
   
   UMAP_distances = distances(pbmc@reductions$umap@cell.embeddings)
   pbmc.permuted <- Seurat::RunUMAP(pbmc.permuted, dims = 1:K, seed.use = 100, reduction = pre_embedding, n.neighbors = n, min.dist = m)
@@ -118,14 +120,14 @@ Cell.Classify = function(rho_original, rho_permuted, dubious_cutoff = 0.05, trus
 #wrapper function
 optimize = function(input_data, input_data.permuted, pre_embedding, reduction.method, K,
                     n, m, perplexity, results.PCA, similarity_percent, dubious_cutoff,
-                    trustworthy_cutoff, check_duplicates = T) {
+                    trustworthy_cutoff, check_duplicates = T, rerun = T) {
   
   if(reduction.method == 'umap') {
     results <-Distances.UMAP(pbmc = input_data ,pbmc.permuted = input_data.permuted, K = K, pre_embedding = pre_embedding,
-                              n = n, m = m)
+                              n = n, m = m, rerun = rerun)
   } else if (reduction.method == 'tsne') {
     results <- Distances.tSNE(pbmc = input_data ,pbmc.permuted = input_data.permuted, K = K, pre_embedding = pre_embedding,
-                              perplexity_score = perplexity, check_duplicates = check_duplicates)
+                              perplexity_score = perplexity, check_duplicates = check_duplicates, rerun = rerun)
   }
   
   similarity_score <- Cell.Similarity(results.PCA$pre_embedding_distances, results.PCA$pre_embedding_distances_permuted,
@@ -142,7 +144,7 @@ optimize = function(input_data, input_data.permuted, pre_embedding, reduction.me
 
 scDEED = function(input_data, K, n_neighbors = c(5, 20, 30, 40,50), min.dist = c(0.1, 0.4), similarity_percent = 0.5,reduction.method,
                   perplexity = c(seq(from=20,to=410,by=30),seq(from=450,to=800,by=50)), pre_embedding = 'pca', slot = 'scale.data', 
-                  dubious_cutoff = 0.05, trustworthy_cutoff = 0.95, permuted = NA, check_duplicates = T){
+                  dubious_cutoff = 0.05, trustworthy_cutoff = 0.95, permuted = NA, check_duplicates = T, rerun = T){
   
 
   if (is.na(permuted)) {
@@ -167,7 +169,7 @@ scDEED = function(input_data, K, n_neighbors = c(5, 20, 30, 40,50), min.dist = c
                                            n = n, m = m, perplexity = NA, results.PCA = results.PCA,
                                            similarity_percent = similarity_percent,
                                            dubious_cutoff = dubious_cutoff,
-                                           trustworthy_cutoff = trustworthy_cutoff)))
+                                           trustworthy_cutoff = trustworthy_cutoff, rerun = rerun)))
       end = Sys.time()
       time = end-start
       print('Estimated time per hyperparameter setting ')
@@ -181,7 +183,7 @@ scDEED = function(input_data, K, n_neighbors = c(5, 20, 30, 40,50), min.dist = c
                                           n = n, m = m, perplexity = NA, results.PCA = results.PCA,
                                           similarity_percent = similarity_percent,
                                           dubious_cutoff = dubious_cutoff,
-                                          trustworthy_cutoff = trustworthy_cutoff)))
+                                          trustworthy_cutoff = trustworthy_cutoff, rerun = rerun)))
 
     if(nrow(all_pairs)==2){
       all_dub=as.matrix(all_dub)
@@ -193,7 +195,7 @@ scDEED = function(input_data, K, n_neighbors = c(5, 20, 30, 40,50), min.dist = c
                                                 n = n, m = m, perplexity = NA, results.PCA = results.PCA,
                                                 similarity_percent = similarity_percent,
                                                 dubious_cutoff = dubious_cutoff,
-                                                trustworthy_cutoff = trustworthy_cutoff)))
+                                                trustworthy_cutoff = trustworthy_cutoff, rerun = rerun)))
       all_dub=as.matrix(all_dub)
       
     }
@@ -224,7 +226,7 @@ if(length(perplexity)>1){
                                                  optimize(input_data, input_data.permuted, pre_embedding, reduction.method, K,
                                                           n, m, perplexity = p, results.PCA = results.PCA,
                                                           similarity_percent = similarity_percent,
-                                                          dubious_cutoff = dubious_cutoff, trustworthy_cutoff, check_duplicates = check_duplicates)))
+                                                          dubious_cutoff = dubious_cutoff, trustworthy_cutoff, check_duplicates = check_duplicates, rerun = rerun)))
   end = Sys.time()
   time = end-start
   print('Estimated time per hyperparameter setting ')
@@ -237,7 +239,7 @@ if(length(perplexity)>1){
                                           optimize(input_data, input_data.permuted, pre_embedding, reduction.method, K,
                                                    n, m, perplexity = p, results.PCA = results.PCA,
                                                    similarity_percent = similarity_percent,
-                                                   dubious_cutoff = dubious_cutoff, trustworthy_cutoff, check_duplicates = check_duplicates)))
+                                                   dubious_cutoff = dubious_cutoff, trustworthy_cutoff, check_duplicates = check_duplicates, rerun = rerun)))
     
     if(length(perplexity)==2){
       dubious_number_tSNE=as.matrix(dubious_number_tSNE)
@@ -251,7 +253,7 @@ if(length(perplexity)>1){
                                                          optimize(input_data, input_data.permuted, pre_embedding, reduction.method, K,
                                                                   n, m, perplexity = p, results.PCA = results.PCA,
                                                                   similarity_percent = similarity_percent,
-                                                                  dubious_cutoff = dubious_cutoff, trustworthy_cutoff, check_duplicates = check_duplicates)))
+                                                                  dubious_cutoff = dubious_cutoff, trustworthy_cutoff, check_duplicates = check_duplicates, rerun = rerun)))
   dubious_number_tSNE = as.matrix(dubious_number_tSNE)
   }
   
