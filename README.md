@@ -67,7 +67,7 @@ If there is more than 1 hyperparameter setting to check, scDEED will provide an 
 
 - `K`: the number of PCs to use. This must be specified by the user. 
 - `similarity_percent`: (default = 0.5) the percentage of neighboring cells to consider in the calculations. A higher similarity percent will consider more cells (global focus), while a smaller similarity percent will consider less cells (local focus). For a full exploration of similarity percent, please see the Methods section in our paper
--  `slot`: (default = 'scale.data', the default slot in Seurat) the input space for PCA. If users would like to change the normalization pipeline, they should replace the scale.data slot with their normalized data. 
+-  `slot`: (default = 'scale.data', the default slot in Seurat) the input space for PCA. If users would like to change the normalization pipeline, they should either replace the scale.data slot with their normalized data, or add their normalized data as another layer and specify the name here. 
 - `pre_embedding`: (default = 'pca') the input space for t-SNE/UMAP; by default the input space is the PC space. If you would like to change this, please see section: Changing Input Space
 - `dubious_cutoff`: (default = 0.05) This sets the cutoff for classifying cells. For an embedding to be considered dubious, the cell's similarity score must be lower than the 5th percentile of cell embedding scores from the null distribution. 
 - `trustworthy_cutoff`: (default = 0.95) For an embedding to be considered trustworthy, the cell's similarity score must be higher than the 95th percentile of cell embedding scores from the null distribution. 
