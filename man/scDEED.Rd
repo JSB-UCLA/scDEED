@@ -50,7 +50,7 @@ the cutoff for trustworthy cell classification; if cells have scores are above t
 The user may provide their own permuted data here. In general, users will not need to provide this object. Users may want to use this if they are going to use a different pre-embedding space and need a different algorithm, i.e. ICA or something similar, to be applied to the permuted data matrix. Since we do not have this functionality in the scDEED package, users would need to permute the data and apply ICA themselves, then provide this permuted object to the function. For more details, please see our tutorial. 
   }
   \item{check_duplicates}{
-This is an argument to Seurat's RunTSNE. Default = T. If there are duplicates in the data, t-SNE will not proceed. If the user believes there are true biological duplicates in the data, they may change this setting to F.
+This is an argument to Seurat::RunTSNE. Default = T. If there are duplicates in the data, t-SNE will not proceed. If the user believes there are true biological duplicates in the data, they may change this setting to F.
   }
   \item{rerun}{
 This is a time-saving argument (default = T). If the user has already performed dimension reduction and would only like to check the results of that dimension reduction, then they can use rerun=F so scDEED does not re-run the embedding method on the data. In most cases, rerun=T because if you are optimizing hyperparameters, the function will need to rerun the embedding method. 
