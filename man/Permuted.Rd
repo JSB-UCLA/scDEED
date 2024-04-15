@@ -27,7 +27,7 @@ The number of PCs to use
 \value{
 Returns a new Seurat object in which each row has been permuted and PCA has been calculated on the permuted data matrix. 
 
-}
+} 
 
 \description{
 This function permutes each row of the data matrix and calculates PCA on the permuted data matrix. By permuting each row of the data matrix, the marginal gene distributions are maintained. 

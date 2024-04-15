@@ -14,7 +14,7 @@ Distances.UMAP(pbmc,pbmc.permuted, K,  n= 30, m = 0.3, pre_embedding = 'pca', re
 The original Seurat object 
 }
   \item{pbmc_permuted}{
-The permuted Seurat object, i.e. the output of \texttt{Permuted}. 
+The permuted Seurat object, i.e. the output of \code{Permuted}. 
 }
 
   \item{K}{

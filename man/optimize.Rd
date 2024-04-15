@@ -2,7 +2,7 @@
 \alias{optimize}
 
 \title{
-Dubious cells detector under tSNE and UMAP
+Dubious cells detector under tSNE and UMAP for a single hyperparameter setting
 }
 
 \usage{
@@ -43,18 +43,13 @@ number of principal components
 }
 
   \item{similarity_percent}{
-When measuring the similarity between the UMAP distances and the PCA distances, we look at this similarity_percent proportion of the smallest distances in UMAP space. We do the same thing for tSNE. Default value 0.5
+The percentage of cells to consider in the similarity score calculations (default = 0.5). scDEED uses the nearest floor(number of cells * similarity_percent) neighbors in the similarity percent calculations. Intuitively, a higher similarity score considers more cells as neighbors (emphasis on global preservation) while a lower similarity score considers less cells (emphasis on local preservation) 
 }
 
-  \item{dubious_cutoff}{
-the cutoff for dubious cell classification; if cells have scores are below the dubious_cutoff percentile of null scores, they will be considered dubious. Default setting is 0.05. 
-  }
-  \item{trustworthy_cutoff}{
-the cutoff for trustworthy cell classification; if cells have scores are above the trustworthy_cutoff percentile of null scores, they will be considered trustworthy. Default setting is 0.95. 
-  }
+  \item{dubious_cutoff}{The cutoff for dubious cells (default = 0.05). Cells with scores worse (lower) than the dubious_cutoff percentile of null scores will be considered dubious. A lower dubious_cutoff means that to be considered dubious, cells will have to have lower scores. A higher dubious_cutoff means that cells can score higher and still be considered dubious. It is similar to significance level in hypothesis testing.   }  \item{trustworthy_cutoff}{The cutoff for trustworthy cells (default = 0.95). Cells with scores better (higher) than the trustworthy_cutoff percentile of null scores will be considered trustworthy. A lower trustworthy_cutoff means that to be considered trustworthy, cells will not have to score as high. A higher trustworthy_cutoff means that cells will need to score higher in order to be considered trustworthy. It is similar to significance level in hypothesis testing.   }
   
   \item{check_duplicates}{
-This is an argument to Seurat::RunTSNE. Default = T. If there are duplicates in the data, t-SNE will not proceed. If the user believes there are true biological duplicates in the data, they may change this setting to F.
+This is an argument to \code{Seurat::RunTSNE}. Default = T. If there are duplicates in the data, t-SNE will not proceed. If the user believes there are true biological duplicates in the data, they may change this setting to F.
   }
   \item{rerun}{
 This is a time-saving argument (default = T). If the user has already performed dimension reduction and would only like to check the results of that dimension reduction, then they can use rerun=F so scDEED does not re-run the embedding method on the data. In most cases, rerun=T because if you are optimizing hyperparameters, the function will need to rerun the embedding method. 
@@ -69,7 +64,7 @@ If one of the categories (dubious, trustworthy, or intermediate) is empty, the e
 }
 
 \description{
-A wrapper function for the scDEED method. It is similar to the function \texttt{scDEED}, but there are no defaults, and it can only handle one hyperparameter input. Additionally, \texttt{results.PCA} must be provided (in \texttt{scDEED}, this will be calculated internally). You can obtain the same results using \texttt{scDEED} at a single hyperparameter setting. 
+A wrapper function for the scDEED method. It is similar to the function \code{scDEED}, but there are no defaults, and it can only handle one hyperparameter input. Additionally, \code{results.PCA} must be provided (in \code{scDEED}, this will be calculated internally). You can obtain the same results using \code{scDEED} at a single hyperparameter setting. 
 }
 
 

@@ -24,7 +24,7 @@ A matrix containing the cell-cell distances calculated in the post-embedding spa
 }
 
    \item{similarity_percent}{
-The percentage of cells to consider in the similarity score calculations (default = 0.5). scDEED uses the nearest floor(number of cells * similarity_percent) neighbors in the similarity percent calculations. Intuitively, a higher similarity score considers more cells as neighbors (emphasis on global preservation) while a lower similarity score considers less (emphasis on local preservation) 
+The percentage of cells to consider in the similarity score calculations (default = 0.5). scDEED uses the nearest floor(number of cells * similarity_percent) neighbors in the similarity percent calculations. Intuitively, a higher similarity score considers more cells as neighbors (emphasis on global preservation) while a lower similarity score considers less cells (emphasis on local preservation) 
 }
 
 }

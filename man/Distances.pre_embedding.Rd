@@ -14,7 +14,7 @@ Distances.pre_embedding(pbmc, pbmc_permuted, K, pre_embedding = 'pca')
 The original Seurat object 
 }
   \item{pbmc_permuted}{
-The permuted Seurat object, i.e. the output of \texttt{Permuted}. 
+The permuted Seurat object, i.e. the output of \code{Permuted}. 
 }
 
   \item{K}{
