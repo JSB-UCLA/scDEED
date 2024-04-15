@@ -30,7 +30,7 @@ The percentage of cells to consider in the similarity score calculations (defaul
 }
 
 \value{
-Returns a list with three vectors, (1) 'dubious_cells': the cell embeddings with dubious classification, as determined by the dubious_cutoff on the null data (2) 'trustworthy_cells': the cell embeddings with trustworthy classification, as determined by the trustworthy_cutoff on the null data (3) 'intermediate_cells': the cells with intermediate classification, as determined by the dubious_cutoff and trustworthy_cutoff on the null data
+Returns a list with three vectors, (1) 'dubious_cells': the cell embeddings with dubious classification, as determined by the \code{dubious_cutoff} on the null data (2) 'trustworthy_cells': the cell embeddings with trustworthy classification, as determined by the \code{trustworthy_cutoff} on the null data (3) 'intermediate_cells': the cells with intermediate classification, as determined by the \code{dubious_cutoff} and \code{trustworthy_cutoff} on the null data
 
 }
 
