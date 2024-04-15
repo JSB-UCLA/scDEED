@@ -35,7 +35,7 @@ Returns a list with three vectors, (1) 'dubious_cells': the cell embeddings with
 }
 
 \description{
-This function classifies the cell embeddings as dubious, trustworthy, or intermediate. It uses the cell similarity scores calculated on permuted data (\texttt{rho_permuted}) to classify the cell similarity scores calculated on the original data (\texttt{rho_original}). The classifications are based on the dubious_cutoff and trustworthy cutoff. 
+This function classifies the cell embeddings as dubious, trustworthy, or intermediate. It uses the cell similarity scores calculated on permuted data (\code{rho_permuted}) to classify the cell similarity scores calculated on the original data (\code{rho_original}). The classifications are based on the dubious_cutoff and trustworthy cutoff. 
 
 }
 
