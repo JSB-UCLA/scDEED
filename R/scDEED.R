@@ -144,12 +144,12 @@ optimize = function(input_data, input_data.permuted, pre_embedding, reduction.me
 
 scDEED = function(input_data, K, n_neighbors = c(5, 20, 30, 40,50), min.dist = c(0.1, 0.4), similarity_percent = 0.5,reduction.method,
                   perplexity = c(seq(from=20,to=410,by=30),seq(from=450,to=800,by=50)), pre_embedding = 'pca', slot = 'scale.data', 
-                  dubious_cutoff = 0.05, trustworthy_cutoff = 0.95, permuted = NA, check_duplicates = T, rerun = T){
+                  dubious_cutoff = 0.05, trustworthy_cutoff = 0.95, permuted = NA, check_duplicates = T, rerun = T, default_assay = 'RNA'){
   
 
   if (is.na(permuted)) {
     print('Permuting data')
-    input_data.permuted <- suppressMessages(Permuted(input_data, K = K,slot = slot))
+    input_data.permuted <- suppressMessages(Permuted(input_data, K = K,slot = slot, default_assay = default_assay))
     print('Permutation finished')
   } else {
     input_data.permuted = permuted
