@@ -8,7 +8,7 @@ Dubious cells detector under tSNE and UMAP
 \usage{
 scDEED(input_data, K, n_neighbors = c(5, 20, 30, 40,50), min.dist = c(0.1, 0.4), similarity_percent = 0.5,reduction.method,
                   perplexity = c(seq(from=20,to=410,by=30),seq(from=450,to=800,by=50)), pre_embedding = 'pca', slot = 'scale.data', 
-                  dubious_cutoff = 0.05, trustworthy_cutoff = 0.95, permuted = NA, check_duplicates = T, rerun = T)
+                  dubious_cutoff = 0.05, trustworthy_cutoff = 0.95, permuted = NA, check_duplicates = T, rerun = T, default_assay = 'RNA')
   
 
 }
@@ -56,6 +56,10 @@ This is an argument to \code{Seurat::RunTSNE}. Default = T. If there are duplica
   \item{rerun}{
 This is a time-saving argument (default = T). If the user has already performed dimension reduction and would only like to check the results of that dimension reduction, then they can use rerun=F so scDEED does not re-run the embedding method on the data. In most cases, rerun=T because if you are optimizing hyperparameters, the function will need to rerun the embedding method. 
   }
+\item{default_assay}{
+The assay to use for optimization; default is 'RNA'
+  }
+
 }
 
 \value{
