@@ -1,7 +1,10 @@
 
 # Permutation for input as Seurat object
-Permuted = function (pbmc, default_assay = 'RNA', slot = 'scale.data', K)
+Permuted = function (pbmc, default_assay = 'active.assay', slot = 'scale.data', K)
 {
+  if(default_assay == 'active.assay'){
+    default_assay = pbmc@active.assay
+    }
   pb <- txtProgressBar(min = 0, max = 1, initial = 0, char = "=", 
                        width = NA, title, label, style = 3, file = "")
   setTxtProgressBar(pb, 0.1)
@@ -144,7 +147,7 @@ optimize = function(input_data, input_data.permuted, pre_embedding, reduction.me
 
 scDEED = function(input_data, K, n_neighbors = c(5, 20, 30, 40,50), min.dist = c(0.1, 0.4), similarity_percent = 0.5,reduction.method,
                   perplexity = c(seq(from=20,to=410,by=30),seq(from=450,to=800,by=50)), pre_embedding = 'pca', slot = 'scale.data', 
-                  dubious_cutoff = 0.05, trustworthy_cutoff = 0.95, permuted = NA, check_duplicates = T, rerun = T, default_assay = 'RNA'){
+                  dubious_cutoff = 0.05, trustworthy_cutoff = 0.95, permuted = NA, check_duplicates = T, rerun = T, default_assay = 'active.assay'){
   
 
   if (is.na(permuted)) {
