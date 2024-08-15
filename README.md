@@ -66,7 +66,7 @@ Now we will introduce the scDEED function.
 - `similarity_percent`: (default = 0.5) the percentage of neighboring cells to consider in the calculations. A higher similarity percent will consider more cells (global focus), while a smaller similarity percent will consider less cells (local focus). For a full exploration of similarity percent, please see the Methods section in our paper
 -  `slot`: (default = 'scale.data', the default slot in Seurat) the input space for PCA. If users would like to change the normalization pipeline, they should either replace the scale.data slot with their normalized data, or add their normalized data as another layer and specify the name here. 
 - `pre_embedding`: (default = 'pca') the input space for t-SNE/UMAP; by default the input space is the PC space. If you would like to change this, please see section: Changing Input Space
-- `default_assay`: (default = 'RNA') the assay to use for optimization. If working with an integrated dataset, users may wish to change this to 'integrated'
+- `default_assay`: (default = 'active.assay') the assay to use for optimization. If left unspecified, scDEED will use the active.assay. Otherwise, can be changed to 'integrated' or 'RNA' or other assays present. 
 - `dubious_cutoff`: (default = 0.05) This sets the cutoff for classifying cells. For an embedding to be considered dubious, the cell's similarity score must be lower than the 5th percentile (or `dubious_cutoff` percentile) of cell embedding scores from the null distribution. A higher `dubious_cutoff` means that the cutoff score will be higher (more cell embeddings will be considered dubious). A lower  `dubious_cutoff` means that the cutoff score will be lower; cell embeddings will have to have very low reliability scores to be considered dubious. 
 - `trustworthy_cutoff`: (default = 0.95) For an embedding to be considered trustworthy, the cell's similarity score must be higher than the 95th percentile (or `trustworthy_cutoff` percentile) of cell embedding scores from the null distribution. A lower `trustworthy_cutoff` means that the cutoff score will be lower (more cell embeddings will be considered trustworthy). A higher `trustworthy_cutoff` means that the cutoff score will be higher; cell embeddings will have to have very high reliability scores to be considered trustworthy.
 
@@ -200,6 +200,36 @@ DimPlot(data_opt, reduction = 'umap', cells.highlight = list('dubious' = dubious
 
 ```
 <img src="man/figures/umap_opt.png" width="100%" />
+
+## Working with integrated data 
+Seurat's popular integration method uses CCA. To apply scDEED to integrated data, we will permute the integrated CCA space and use that as input for scDEED. 
+``` r
+## Assume we are starting with integrated data. Please follow Seurat's tutorial (https://satijalab.org/seurat/articles/seurat5_integration)
+
+#here I downsampled just to make it faster 
+#data = ifnb[1:1000, 1:200]
+
+pre_embedding = 'integrated.cca'
+cca_space = Embeddings(data, pre_embedding)
+permuted_ccaspace = cca_space
+## We will now permute the integrated CCA space.
+
+set.seed(1000)
+for (i in 1:dim(permuted_ccaspace)[1])
+{
+  row = pracma::randperm(dim(permuted_ccaspace)[2])
+  permuted_ccaspace[i,]=cca_space[i,row]
+  
+}
+
+##Now, we will add our permuted CCA space as a reduced dimension object. 
+data.permuted = data
+data.permuted[[pre_embedding]] <- CreateDimReducObject(embeddings =permuted_ccaspace , key = "integratedcca_", assay = DefaultAssay(data.permuted))
+
+##Now we can call scDEED and 1) provide our own permuted object 2) specify that the pre_embedding space is integrated.cca
+result = scDEED(data, K = 8, pre_embedding = pre_embedding, permuted = data.permuted, reduction.method = 'tsne', perplexity = c(10, 20), check_duplicates = F)
+
+```
 
 
 ## Changing Input Space
