@@ -213,12 +213,12 @@ pre_embedding = 'integrated.cca'
 cca_space = Embeddings(data, pre_embedding)
 permuted_ccaspace = cca_space
 ## We will now permute the integrated CCA space.
-
+##This is the same as the Permuted function, but we have swapped rows/columns because embeddings are cell x features while the scale.data slot is featuresxcells
 set.seed(1000)
-for (i in 1:dim(permuted_ccaspace)[1])
+for (i in 1:dim(permuted_ccaspace)[2])
 {
-  row = pracma::randperm(dim(permuted_ccaspace)[2])
-  permuted_ccaspace[i,]=cca_space[i,row]
+  row = pracma::randperm(dim(permuted_ccaspace)[1])
+  permuted_ccaspace[,i]=cca_space[row,i]
   
 }
 
