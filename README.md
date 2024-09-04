@@ -257,16 +257,16 @@ To examine which one is more reasonable, we check the average distance in the PC
 
 
 ```r
-distances = ifnb@reductions$pca@cell.embeddings
+distances = ifnb@reductions$integrated.cca@cell.embeddings
 distances = as.matrix(dist(distances))
 
 ##mean distance between cluster 10 and cluster 17
 mean(distances[ifnb$seurat_clusters==10, ifnb$seurat_clusters==17])
-##30.28532
+##28.11707
 
 ##mean distance between cluster 4 and cluster 17
 mean(distances[ifnb$seurat_clusters==4, ifnb$seurat_clusters==17])
-##27.39533
+##25.83387
 
 ```
 
