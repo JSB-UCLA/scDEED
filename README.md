@@ -205,9 +205,9 @@ DimPlot(data_opt, reduction = 'umap', cells.highlight = list('dubious' = dubious
 Seurat's popular integration method uses CCA. To apply scDEED to integrated data, we will permute the integrated CCA space and use that as input for scDEED. 
 ``` r
 ## Assume we are starting with integrated data. Please follow Seurat's tutorial (https://satijalab.org/seurat/articles/seurat5_integration)
+ElbowPlot(ifnb)
+#Based on the elbow plot, I picked 12 PCs
 
-#here I downsampled just to make it faster 
-#data = ifnb[1:1000, 1:200]
 
 pre_embedding = 'integrated.cca'
 cca_space = Embeddings(data, pre_embedding)
@@ -227,10 +227,50 @@ data.permuted = data
 data.permuted[[pre_embedding]] <- CreateDimReducObject(embeddings =permuted_ccaspace , key = "integratedcca_", assay = DefaultAssay(data.permuted))
 
 ##Now we can call scDEED and 1) provide our own permuted object 2) specify that the pre_embedding space is integrated.cca
-result = scDEED(data, K = 8, pre_embedding = pre_embedding, permuted = data.permuted, reduction.method = 'tsne', perplexity = c(10, 20), check_duplicates = F)
+result = scDEED(data, K = 12, pre_embedding = pre_embedding, permuted = data.permuted, reduction.method = 'tsne')
+head(result$num_dubious)
+```
+|   | perplexity  | number_dubious_cells |
+|---|-------------|-------------------------|
+| 1 | 20            | 474                       |
+| 2 | 50           | 226                       |
+| 3 | 80            | 48                      |
+| 4 | 110           | 98                       |
+| 5 | 140            | 139                       |
+| 6 | 170            | 322                       |
+
+The perplexity resulting in the lowest number of dubious cells (from the entire dataframe) is 80. 
+```r
+ifnb =  RunTSNE(ifnb, reduction = "integrated.cca", perplexity = 80, reduction.name = 'tsne_80', seed.use = 1)
+ifnb =  RunTSNE(ifnb, reduction = "integrated.cca", reduction.name = 'tsne_default')
+Idents(ifnb) = 'seurat_clusters'
+DimPlot(ifnb, reduction = 'tsne_80', label = T) + DimPlot(ifnb, reduction = 'tsne_default', label = T)
+ggsave('ifnb_clusters.pdf', width = 7, height = 3)
+##the image below has some adjustments made in adobe illustrator, primarily making the key look nicer in two columns vs just 1, and jittering the cluster numbers
+
+```
+<img src="man/figures/ifnb_clusters.png" width="95%" />
+
+Overall, the t-SNE looks quite similar. However, one major change is in the position of clusters 0, 14, 2, and 17. In the default settings (Perplexity = 40), the clusters are ordereds in a clockwise direction as 10, 4, 0, 14, 2, and 17. In the optimized perplexity, the order is flipped- the order is 10, 4, 17, 2, 14, 0. 
+
+To examine which one is more reasonable, we check the average distance in the PC space between cells in (cluster 17, cluster 4) and (cluster 17, cluster 10). In the original settings, cluster 17 is closer to cluster 10 than cluster 4. In the scDEED optimized perplexity, cluster 17 is closer to cluster 4 than cluster 10. 
+
+
+```r
+distances = ifnb@reductions$pca@cell.embeddings
+distances = as.matrix(dist(distances))
+
+##mean distance between cluster 10 and cluster 17
+mean(distances[ifnb$seurat_clusters==10, ifnb$seurat_clusters==17])
+##30.28532
+
+##mean distance between cluster 4 and cluster 17
+mean(distances[ifnb$seurat_clusters==4, ifnb$seurat_clusters==17])
+##27.39533
 
 ```
 
+In the PC space, cluster 4 and cluster 17 should be closer than cluster 10 and cluster 17, which is accurately captured by the scDEED optimized perplexity. 
 
 ## Changing Input Space
 Users may want to change the pre-embedding space. For example, if the feature space is small, users may not want to use the PC space and just use the feature space directly. In the case of scRNA-seq data, we would recommend against using the gene expression space because euclidean distances may not be reliable at high dimensions. 
