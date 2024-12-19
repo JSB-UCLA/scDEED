@@ -162,7 +162,7 @@ scDEED = function(input_data, K, n_neighbors = c(5, 20, 30, 40,50), min.dist = c
 
 
   
-  if (reduction.method == 'umap') {
+  if (tolower(reduction.method) == 'umap') {
     all_pairs <- expand.grid(n_neighbors, min.dist)
     if(nrow(all_pairs)>1){
       print('Estimating time for each hyperparameter setting...')
@@ -215,7 +215,7 @@ scDEED = function(input_data, K, n_neighbors = c(5, 20, 30, 40,50), min.dist = c
   
 
   
-  if (reduction.method == "tsne") {
+  if (tolower(reduction.method) == "tsne") {
     
     if (is.null(input_data@reductions$tsne)) {
       input_data <- Seurat::RunTSNE(input_data, do.fast = T)
