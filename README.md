@@ -11,7 +11,7 @@ We also have a post on [TowardsDataScience](https://towardsdatascience.com/stati
 Currently, the package supports tSNE and UMAP, both implemented through the Seurat package. We do have a section in the tutorial if you would like to adapt scDEED for use with other dimension reduction methods. 
 
 ## Installation
-You can install scDEED from GitHub using devtools. It should install in 1 minute, but may take longer if you need to update dependencies. If you do not want to update all packages, then please do not selection option 1 when asked which packages you would like to update.  
+You can install scDEED from GitHub using devtools. It should install in 1 minute, but may take longer if you need to update dependencies. If you do not want to update all packages, then please do not selection option 1 when asked which packages you would like to update. You can specify which packages you would like to update by entering the numbers. 
 
 ``` r
 library(devtools)
