@@ -149,7 +149,11 @@ scDEED = function(input_data, K, n_neighbors = c(5, 20, 30, 40,50), min.dist = c
                   perplexity = c(seq(from=20,to=410,by=30),seq(from=450,to=800,by=50)), pre_embedding = 'pca', slot = 'scale.data', 
                   dubious_cutoff = 0.05, trustworthy_cutoff = 0.95, permuted = NA, check_duplicates = T, rerun = T, default_assay = 'active.assay'){
   
-
+  if(pre_embedding!='pca'&is.na(permuted)){
+    error_message = paste0(c('Stop! scDEED does not know how to calculate ', pre_embedding, ". Please calculate this pre-embedding on the permuted data and provide the object in the permuted argument. Refer to tutorial, https://github.com/JSB-UCLA/scDEED?tab=readme-ov-file#changing-input-space"))
+    stop(error_message)
+  }
+  
   if (is.na(permuted)) {
     print('Permuting data')
     input_data.permuted <- suppressMessages(Permuted(input_data, K = K,slot = slot, default_assay = default_assay))
